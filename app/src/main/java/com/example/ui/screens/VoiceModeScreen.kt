@@ -1,7 +1,5 @@
 package com.example.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -26,14 +24,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.MicOff
-import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,16 +52,16 @@ import com.example.agent.TaskExecutionEngine
 import com.example.data.model.AgentStatus
 import com.example.data.repository.MayaPreferences
 import com.example.ui.components.MayaOrb
-import com.example.ui.theme.CyanNeon
-import com.example.ui.theme.CyberDark700
-import com.example.ui.theme.CyberDark800
-import com.example.ui.theme.CyberDark900
-import com.example.ui.theme.EmeraldNeon
-import com.example.ui.theme.RoseNeon
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.VioletNeon
+import com.example.ui.components.appleBounceClick
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleGreenDark
+import com.example.ui.theme.ApplePurpleDark
+import com.example.ui.theme.AppleRedDark
+import com.example.ui.theme.AppleTheme
 
+/**
+ * 🍎 Maya AI Voice Mode — Apple Siri / Audio-Inspired Fluid Voice Interface.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoiceModeScreen(
@@ -89,72 +82,98 @@ fun VoiceModeScreen(
                     Column {
                         Text(
                             text = "Live Voice Mode",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = (-0.3).sp
+                            ),
+                            color = AppleTheme.colors.textPrimary
                         )
                         Text(
-                            text = "Persona: ${persona.displayName} (${persona.tone.take(24)}...)",
+                            text = "Persona: ${persona.displayName} • ${persona.tone.take(20)}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = CyanNeon
+                            color = AppleTheme.colors.accent
                         )
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = CyberDark900)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppleTheme.colors.background
+                )
             )
         },
-        containerColor = CyberDark900
+        containerColor = AppleTheme.colors.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(20.dp),
+                .padding(horizontal = 20.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Mode Switch (Section 25: Normal vs Advanced Agentic)
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CyberDark800),
-                border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF1E293B)))
+            // Mode Switch (Apple Grouped Container)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(AppleTheme.colors.surface)
+                    .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(20.dp))
+                    .padding(16.dp)
             ) {
                 Row(
-                    modifier = Modifier.padding(14.dp).fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = if (isAgentic) "Advanced Agentic Mode" else "Normal Voice Mode",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = if (isAgentic) CyanNeon else TextPrimary
+                                text = if (isAgentic) "Advanced Agentic Mode" else "Natural Conversation Mode",
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                                color = AppleTheme.colors.textPrimary
                             )
                             if (isAgentic) {
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Box(
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(4.dp))
-                                        .background(VioletNeon.copy(alpha = 0.2f))
-                                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(ApplePurpleDark.copy(alpha = 0.16f))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
                                 ) {
-                                    Text("PRO", color = VioletNeon, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                    Text(
+                                        text = "PRO",
+                                        color = ApplePurpleDark,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                             }
                         }
+                        Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = if (isAgentic)
-                                "Includes Planning, Screen Perception, Coordinates & Accessibility"
+                                "Includes multi-step planning, screen perception, and device actions"
                             else
-                                "Fast conversational voice responses",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            color = TextMuted
+                                "Instant fluid vocal feedback and conversation",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppleTheme.colors.textMuted
                         )
                     }
 
@@ -162,19 +181,21 @@ fun VoiceModeScreen(
                         checked = isAgentic,
                         onCheckedChange = { preferences.setAgenticVoiceMode(it) },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = CyanNeon,
-                            checkedTrackColor = CyberDark700
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = AppleTheme.colors.accent,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = AppleTheme.colors.surfaceSecondary
                         )
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Main Holographic Voice Orb
+            // Main Fluid Holographic Voice Orb
             MayaOrb(
                 status = status,
-                size = 240.dp,
+                size = 230.dp,
                 showInteractiveModes = true,
                 onStatusSelect = { newStatus ->
                     taskEngine.updateStatus(newStatus)
@@ -188,18 +209,22 @@ fun VoiceModeScreen(
                 }
             )
 
-            // Animated Simulated Audio Waveform
+            // Animated Audio Waveform (iOS Siri Audio reactive visualizer)
             Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.height(48.dp)
+                modifier = Modifier.height(44.dp)
             ) {
-                for (i in 0 until 16) {
+                for (i in 0 until 18) {
                     val barHeight by infiniteTransition.animateFloat(
-                        initialValue = 8f,
-                        targetValue = if (status == AgentStatus.LISTENING || status == AgentStatus.SPEAKING) (20 + (i % 5) * 6).toFloat() else 6f,
+                        initialValue = 6f,
+                        targetValue = if (status == AgentStatus.LISTENING || status == AgentStatus.SPEAKING) {
+                            (16 + (i % 6) * 5).toFloat()
+                        } else {
+                            5f
+                        },
                         animationSpec = infiniteRepeatable(
-                            animation = tween(400 + i * 40, easing = FastOutSlowInEasing),
+                            animation = tween(380 + i * 35, easing = FastOutSlowInEasing),
                             repeatMode = RepeatMode.Reverse
                         ),
                         label = "wave_$i"
@@ -207,42 +232,57 @@ fun VoiceModeScreen(
 
                     Box(
                         modifier = Modifier
-                            .width(4.dp)
+                            .width(3.5.dp)
                             .height(barHeight.dp)
                             .clip(RoundedCornerShape(2.dp))
-                            .background(if (status == AgentStatus.SPEAKING) EmeraldNeon else CyanNeon)
+                            .background(
+                                if (status == AgentStatus.SPEAKING) AppleGreenDark else AppleTheme.colors.accent
+                            )
                     )
                 }
             }
 
-            // Status Description Card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CyberDark800)
+            // Status Description Card (Apple Grouped Container)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(AppleTheme.colors.surface)
+                    .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(20.dp))
+                    .padding(16.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(14.dp).fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = status.title,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = CyanNeon
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.2).sp
+                        ),
+                        color = when (status) {
+                            AgentStatus.ERROR -> AppleRedDark
+                            AgentStatus.COMPLETED -> AppleGreenDark
+                            AgentStatus.SPEAKING -> AppleGreenDark
+                            else -> AppleTheme.colors.accent
+                        }
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = status.description,
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextMuted,
+                        color = AppleTheme.colors.textSecondary,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
             }
 
-            // Controls Bottom Row
+            // Controls Bottom Row (Apple Style Pill / Rounded Button)
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Button(
@@ -254,25 +294,26 @@ fun VoiceModeScreen(
                         }
                     },
                     modifier = Modifier
-                        .weight(1f)
-                        .height(54.dp)
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .appleBounceClick(pressedScale = 0.96f)
                         .testTag("voice_screen_action_button"),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(18.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (status == AgentStatus.IDLE) CyanNeon else RoseNeon
+                        containerColor = if (status == AgentStatus.IDLE) AppleBlueDark else AppleRedDark
                     )
                 ) {
                     Icon(
                         imageVector = if (status == AgentStatus.IDLE) Icons.Default.Mic else Icons.Default.Stop,
                         contentDescription = null,
-                        tint = Color.Black
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (status == AgentStatus.IDLE) "START LISTENING" else "STOP AGENT",
-                        color = Color.Black,
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = 1.sp
+                        text = if (status == AgentStatus.IDLE) "Start Listening" else "Stop Agent",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
                     )
                 }
             }

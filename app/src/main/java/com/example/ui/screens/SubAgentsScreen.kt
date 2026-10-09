@@ -21,15 +21,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Layers
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Psychology
-import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,15 +44,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ui.theme.CyanNeon
-import com.example.ui.theme.CyberDark700
-import com.example.ui.theme.CyberDark800
-import com.example.ui.theme.CyberDark900
-import com.example.ui.theme.EmeraldNeon
-import com.example.ui.theme.RoseNeon
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.VioletNeon
+import com.example.ui.components.appleBounceClick
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleGreenDark
+import com.example.ui.theme.AppleOrangeDark
+import com.example.ui.theme.ApplePurpleDark
+import com.example.ui.theme.AppleTealDark
+import com.example.ui.theme.AppleTheme
 
 data class SubAgentInfo(
     val id: String,
@@ -67,6 +61,9 @@ data class SubAgentInfo(
     val status: String
 )
 
+/**
+ * 🍎 Maya AI Sub-Agents — Apple-Inspired Autonomous Micro-Services Directory.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubAgentsScreen(
@@ -77,42 +74,42 @@ fun SubAgentsScreen(
     val subAgents = listOf(
         SubAgentInfo(
             "coding",
-            "Coding Agent",
-            "Specialized in writing code, debugging syntax, generating Android composables, and automated testing.",
+            "Coding Specialist",
+            "Specialized in writing Kotlin code, debugging syntax, generating Android composables, and automated testing.",
             Icons.Default.Code,
-            CyanNeon,
+            AppleBlueDark,
             "ACTIVE"
         ),
         SubAgentInfo(
             "bg",
-            "Background Agent",
+            "Background Orchestrator",
             "Coordinates long-running background tasks, timed reminders, notification watchers, and auto sync.",
             Icons.Default.Layers,
-            VioletNeon,
+            ApplePurpleDark,
             "RUNNING"
         ),
         SubAgentInfo(
             "research",
             "Research Agent",
-            "Deep search, news aggregation, document synthesis, and information gathering.",
+            "Deep search, news aggregation, document synthesis, and automated information gathering.",
             Icons.Default.Psychology,
-            EmeraldNeon,
+            AppleGreenDark,
             "STANDBY"
         ),
         SubAgentInfo(
             "automation",
-            "Automation Agent",
+            "Device Automation Agent",
             "Multi-step phone operation, Accessibility node clicks, X/Y coordinate gestures, and app control.",
             Icons.Default.TouchApp,
-            Color(0xFFF59E0B),
+            AppleOrangeDark,
             "READY"
         ),
         SubAgentInfo(
             "vision",
-            "Vision Agent",
+            "Vision Perception Agent",
             "Camera frame analysis, OCR text reading, screen element detection, and visual layout understanding.",
             Icons.Default.Visibility,
-            Color(0xFF38BDF8),
+            AppleTealDark,
             "ACTIVE"
         )
     )
@@ -123,33 +120,52 @@ fun SubAgentsScreen(
                 title = {
                     Text(
                         text = "Specialized Sub-Agents",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.3).sp
+                        ),
+                        color = AppleTheme.colors.textPrimary
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = CyberDark900)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppleTheme.colors.background
+                )
             )
         },
-        containerColor = CyberDark900
+        containerColor = AppleTheme.colors.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Text(
-                text = "SPECIALIZED BACKGROUND WORKERS (Section 35)",
+                text = "SPECIALIZED AUTONOMOUS WORKERS",
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.Bold,
-                    color = TextMuted,
-                    letterSpacing = 1.sp
-                )
+                    color = AppleTheme.colors.textMuted,
+                    letterSpacing = 0.5.sp
+                ),
+                modifier = Modifier.padding(horizontal = 4.dp)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -157,48 +173,58 @@ fun SubAgentsScreen(
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(subAgents.size) { index ->
                     val agent = subAgents[index]
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(18.dp),
-                        colors = CardDefaults.cardColors(containerColor = CyberDark800),
-                        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF1E293B)))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(22.dp))
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(22.dp))
+                            .padding(16.dp)
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
+                        Column {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.weight(1f)
+                                ) {
                                     Box(
                                         modifier = Modifier
                                             .size(42.dp)
-                                            .clip(CircleShape)
-                                            .background(agent.tint.copy(alpha = 0.15f)),
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(agent.tint.copy(alpha = 0.14f)),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(agent.icon, contentDescription = null, tint = agent.tint, modifier = Modifier.size(24.dp))
+                                        Icon(
+                                            imageVector = agent.icon,
+                                            contentDescription = null,
+                                            tint = agent.tint,
+                                            modifier = Modifier.size(22.dp)
+                                        )
                                     }
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Text(
                                         text = agent.title,
-                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                        color = Color.White
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                                        color = AppleTheme.colors.textPrimary
                                     )
                                 }
 
                                 Box(
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(agent.tint.copy(alpha = 0.2f))
-                                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(agent.tint.copy(alpha = 0.15f))
+                                        .padding(horizontal = 8.dp, vertical = 3.dp)
                                 ) {
                                     Text(
                                         text = agent.status,
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             color = agent.tint,
                                             fontWeight = FontWeight.Bold,
-                                            fontSize = 9.sp
+                                            fontSize = 10.sp
                                         )
                                     )
                                 }
@@ -209,21 +235,31 @@ fun SubAgentsScreen(
                             Text(
                                 text = agent.description,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = TextMuted,
+                                color = AppleTheme.colors.textSecondary,
                                 lineHeight = 18.sp
                             )
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(14.dp))
 
                             Button(
                                 onClick = {
                                     Toast.makeText(context, "${agent.title} engaged.", Toast.LENGTH_SHORT).show()
                                 },
-                                modifier = Modifier.fillMaxWidth().height(40.dp),
-                                shape = RoundedCornerShape(10.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = agent.tint)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(42.dp)
+                                    .appleBounceClick(pressedScale = 0.95f),
+                                shape = RoundedCornerShape(14.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = agent.tint
+                                )
                             ) {
-                                Text("Engage Sub-Agent", color = Color.Black, fontWeight = FontWeight.Bold)
+                                Text(
+                                    text = "Engage Sub-Agent",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 13.sp
+                                )
                             }
                         }
                     }

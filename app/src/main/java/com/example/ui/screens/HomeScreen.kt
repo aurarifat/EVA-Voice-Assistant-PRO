@@ -2,6 +2,7 @@ package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,36 +18,30 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
-import androidx.compose.material.icons.filled.MicOff
+import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -67,7 +62,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -77,17 +71,22 @@ import androidx.compose.ui.unit.sp
 import com.example.agent.TaskExecutionEngine
 import com.example.data.model.AgentStatus
 import com.example.data.repository.MayaPreferences
+import com.example.ui.components.AppleMotionDefaults
 import com.example.ui.components.ExecutionPipelineVisualizer
 import com.example.ui.components.MayaOrb
-import com.example.ui.theme.CyanNeon
-import com.example.ui.theme.CyberDark700
-import com.example.ui.theme.CyberDark800
-import com.example.ui.theme.CyberDark900
-import com.example.ui.theme.EmeraldNeon
-import com.example.ui.theme.RoseNeon
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.VioletNeon
+import com.example.ui.components.appleBounceClick
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleGreenDark
+import com.example.ui.theme.AppleIndigoDark
+import com.example.ui.theme.AppleOrangeDark
+import com.example.ui.theme.ApplePinkDark
+import com.example.ui.theme.ApplePurpleDark
+import com.example.ui.theme.AppleRedDark
+import com.example.ui.theme.AppleTealDark
+import com.example.ui.theme.AppleTheme
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,42 +105,40 @@ fun HomeScreen(
     val isVoiceModeOn by preferences.isVoiceModeOn.collectAsState()
     var askInputText by remember { mutableStateOf("") }
 
+    val formattedDate = remember {
+        SimpleDateFormat("EEEE, MMMM d", Locale.getDefault()).format(Date())
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(start = 4.dp)
+                    ) {
                         Text(
-                            text = "MAYA",
+                            text = "Maya",
                             style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 2.sp
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = (-0.5).sp
                             ),
-                            color = Color.White
+                            color = AppleTheme.colors.textPrimary
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "AI",
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 2.sp
-                            ),
-                            color = CyanNeon
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(CyanNeon.copy(alpha = 0.2f))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(AppleTheme.colors.accent.copy(alpha = 0.16f))
+                                .padding(horizontal = 7.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = "AGENT",
+                                text = "AI",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 9.sp
+                                    fontSize = 11.sp
                                 ),
-                                color = CyanNeon
+                                color = AppleTheme.colors.accent
                             )
                         }
                     }
@@ -149,46 +146,66 @@ fun HomeScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = onOpenDrawer,
-                        modifier = Modifier.testTag("menu_drawer_button")
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                            .testTag("menu_drawer_button")
                     ) {
                         Icon(
                             imageVector = Icons.Default.Menu,
                             contentDescription = "Open Navigation Menu",
-                            tint = Color.White
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 },
                 actions = {
                     IconButton(
                         onClick = onNavigateToNotifications,
-                        modifier = Modifier.testTag("notifications_button")
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                            .testTag("notifications_button")
                     ) {
                         Icon(
                             imageVector = Icons.Default.Notifications,
                             contentDescription = "Notifications",
-                            tint = TextPrimary
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
+                    Spacer(modifier = Modifier.width(8.dp))
                     IconButton(
                         onClick = onNavigateToProfile,
-                        modifier = Modifier.testTag("profile_button")
+                        modifier = Modifier
+                            .padding(end = 12.dp)
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                            .testTag("profile_button")
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "Profile",
-                            tint = CyanNeon
+                            tint = AppleTheme.colors.accent,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CyberDark900
+                    containerColor = AppleTheme.colors.background
                 )
             )
         },
-        containerColor = CyberDark900,
+        containerColor = AppleTheme.colors.background,
         bottomBar = {
-            // Section 18: Ask Maya bottom bar
-            AskMayaBottomBar(
+            AppleAskMayaComposer(
                 text = askInputText,
                 onTextChange = { askInputText = it },
                 onSend = {
@@ -213,49 +230,97 @@ fun HomeScreen(
         ) {
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Section 04: Maya AI Orb with Interactive Visual Feedback
-            MayaOrb(
-                status = status,
-                showInteractiveModes = true,
-                onStatusSelect = { newStatus ->
-                    taskEngine.updateStatus(newStatus)
-                },
-                onClick = {
-                    if (status == AgentStatus.IDLE) {
-                        taskEngine.startListeningForVoiceCommand()
-                    } else {
-                        taskEngine.stopTask()
-                    }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Section 05: Big Voice Mode Button
-            VoiceModeToggleButton(
-                isVoiceModeOn = isVoiceModeOn,
-                onToggle = {
-                    val newState = !isVoiceModeOn
-                    preferences.setVoiceMode(newState)
-                    if (newState) {
-                        taskEngine.startListeningForVoiceCommand()
-                    } else {
-                        taskEngine.stopTask()
-                    }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 71 Feature Specification Verification Card
+            // ==========================================
+            // 1. APPLE AI HERO PANEL (Rounded 30dp)
+            // ==========================================
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(CyberDark800)
-                    .border(1.dp, EmeraldNeon.copy(alpha = 0.5f), RoundedCornerShape(14.dp))
-                    .clickable { onNavigateToChecklist() }
-                    .padding(14.dp)
+                    .clip(RoundedCornerShape(30.dp))
+                    .background(AppleTheme.colors.surface)
+                    .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(30.dp))
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // Fluid Intelligence Orb
+                    MayaOrb(
+                        status = status,
+                        size = 190.dp,
+                        showInteractiveModes = true,
+                        onStatusSelect = { newStatus ->
+                            taskEngine.updateStatus(newStatus)
+                        },
+                        onClick = {
+                            if (status == AgentStatus.IDLE) {
+                                taskEngine.startListeningForVoiceCommand()
+                            } else {
+                                taskEngine.stopTask()
+                            }
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(18.dp))
+
+                    // Apple-style Voice Mode Action Control
+                    AppleVoiceControlButton(
+                        isVoiceModeOn = isVoiceModeOn,
+                        status = status,
+                        onToggle = {
+                            val newState = !isVoiceModeOn
+                            preferences.setVoiceMode(newState)
+                            if (newState) {
+                                taskEngine.startListeningForVoiceCommand()
+                            } else {
+                                taskEngine.stopTask()
+                            }
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ==========================================
+            // 2. INFORMATION CARDS (Real Date & Readiness)
+            // ==========================================
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                AppleInfoPill(
+                    title = "Today",
+                    subtitle = formattedDate,
+                    icon = Icons.Default.DateRange,
+                    tint = AppleIndigoDark,
+                    modifier = Modifier.weight(1f)
+                )
+
+                AppleInfoPill(
+                    title = "Assistant",
+                    subtitle = if (status == AgentStatus.IDLE) "Ready & Standby" else status.title,
+                    icon = Icons.Default.Shield,
+                    tint = AppleGreenDark,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // ==========================================
+            // 3. 71/71 SPECIFICATION VERIFICATION CARD
+            // ==========================================
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(AppleTheme.colors.surface)
+                    .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(22.dp))
+                    .appleBounceClick(pressedScale = 0.98f) { onNavigateToChecklist() }
+                    .padding(16.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -264,14 +329,14 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .size(38.dp)
-                            .clip(CircleShape)
-                            .background(EmeraldNeon.copy(alpha = 0.15f)),
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(AppleGreenDark.copy(alpha = 0.16f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = EmeraldNeon,
+                            tint = AppleGreenDark,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -280,153 +345,146 @@ fun HomeScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = "71/71 Features Verified",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = TextPrimary
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                                color = AppleTheme.colors.textPrimary
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .background(EmeraldNeon.copy(alpha = 0.2f))
-                                    .padding(horizontal = 4.dp, vertical = 1.dp)
+                                    .clip(RoundedCornerShape(50.dp))
+                                    .background(AppleGreenDark.copy(alpha = 0.18f))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
                                 Text(
                                     text = "100%",
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = EmeraldNeon
+                                    color = AppleGreenDark
                                 )
                             }
                         }
                         Text(
-                            text = "Tap to view full interactive specification checklist",
-                            fontSize = 12.sp,
-                            color = TextMuted
+                            text = "Interactive feature inspection & real-time tests",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppleTheme.colors.textMuted
                         )
                     }
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "View Checklist",
-                        tint = CyanNeon,
-                        modifier = Modifier.size(20.dp)
+                        tint = AppleTheme.colors.textMuted,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Section 16: Quick Actions Cards
-            Text(
-                text = "QUICK AGENT ACTIONS",
-                style = MaterialTheme.typography.labelMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.sp
-                ),
-                color = TextMuted,
-                modifier = Modifier.align(Alignment.Start)
-            )
+            // ==========================================
+            // 4. QUICK ACTIONS GRID (24dp Rounded Cards)
+            // ==========================================
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "QUICK ACTIONS",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.5.sp
+                    ),
+                    color = AppleTheme.colors.textMuted
+                )
+            }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(horizontal = 2.dp),
-                modifier = Modifier.fillMaxWidth()
+            // 2-Column Responsive Grid of Apple Cards
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                item {
-                    QuickActionCard(
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    AppleActionCard(
                         title = "Music",
-                        subtitle = "Play YouTube",
+                        subtitle = "Play YouTube top hits",
                         icon = Icons.Default.MusicNote,
-                        tint = CyanNeon,
+                        iconBg = AppleRedDark,
+                        modifier = Modifier.weight(1f),
                         onClick = {
-                            taskEngine.executeCustomPrompt("Open YouTube, search top Hindi songs, and play second result.")
+                            taskEngine.executeCustomPrompt("Open YouTube, search top trending music, and play.")
                         }
                     )
-                }
-                item {
-                    QuickActionCard(
+                    AppleActionCard(
                         title = "Study",
-                        subtitle = "AI Whiteboard",
+                        subtitle = "AI Whiteboard notes",
                         icon = Icons.Default.School,
-                        tint = VioletNeon,
+                        iconBg = ApplePurpleDark,
+                        modifier = Modifier.weight(1f),
                         onClick = {
-                            taskEngine.executeCustomPrompt("Create interactive study notes and flashcards on Quantum Physics.")
+                            taskEngine.executeCustomPrompt("Create interactive study notes and quiz on quantum physics.")
                         }
                     )
                 }
-                item {
-                    QuickActionCard(
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    AppleActionCard(
                         title = "Journal",
-                        subtitle = "Daily Voice Log",
+                        subtitle = "Daily voice memory log",
                         icon = Icons.AutoMirrored.Filled.TextSnippet,
-                        tint = EmeraldNeon,
+                        iconBg = AppleOrangeDark,
+                        modifier = Modifier.weight(1f),
                         onClick = {
                             taskEngine.executeCustomPrompt("Record my thoughts and summarize into daily memory log.")
                         }
                     )
-                }
-                item {
-                    QuickActionCard(
-                        title = "Web",
-                        subtitle = "Research Agent",
-                        icon = Icons.Default.Language,
-                        tint = Color(0xFF38BDF8),
-                        onClick = {
-                            taskEngine.executeCustomPrompt("Research latest Android AI Agent updates and summarize.")
-                        }
+                    AppleActionCard(
+                        title = "Scan",
+                        subtitle = "Visual OCR & inspector",
+                        icon = Icons.Default.Search,
+                        iconBg = AppleBlueDark,
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToScan
                     )
                 }
-                item {
-                    QuickActionCard(
-                        title = "Automate",
-                        subtitle = "Screen Workflow",
-                        icon = Icons.Default.AutoAwesome,
-                        tint = Color(0xFFF59E0B),
-                        onClick = {
-                            taskEngine.executeCustomPrompt("Inspect screen and tap primary action button.")
-                        }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    AppleActionCard(
+                        title = "Memories",
+                        subtitle = "Context & trained tasks",
+                        icon = Icons.Default.Psychology,
+                        iconBg = AppleIndigoDark,
+                        modifier = Modifier.weight(1f),
+                        onClick = { preferences.setSetupCompleted(true); onNavigateToVoice() }
+                    )
+                    AppleActionCard(
+                        title = "Chat",
+                        subtitle = "Conversation & code",
+                        icon = Icons.AutoMirrored.Filled.Chat,
+                        iconBg = AppleGreenDark,
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToChat
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Section 17: Information Cards
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                InfoCard(
-                    title = "Weather",
-                    value = "74°F Clear",
-                    caption = "Sunny",
-                    icon = Icons.Default.Cloud,
-                    tint = CyanNeon,
-                    modifier = Modifier.weight(1f)
-                )
-                InfoCard(
-                    title = "Today",
-                    value = "Thursday",
-                    caption = "Oct 8 • Active",
-                    icon = Icons.Default.DateRange,
-                    tint = VioletNeon,
-                    modifier = Modifier.weight(1f)
-                )
-                InfoCard(
-                    title = "Mood",
-                    value = "Calibrated",
-                    caption = "Maya Alert",
-                    icon = Icons.Default.Favorite,
-                    tint = EmeraldNeon,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(22.dp))
-
-            // Section 47: Agent Execution Pipeline Visualizer
+            // ==========================================
+            // 5. AGENT EXECUTION PIPELINE VISUALIZER
+            // ==========================================
             ExecutionPipelineVisualizer(currentStatus = status)
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -434,125 +492,161 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Apple-style Voice Mode Action Control with smooth state transitions.
+ */
 @Composable
-private fun VoiceModeToggleButton(
+private fun AppleVoiceControlButton(
     isVoiceModeOn: Boolean,
+    status: AgentStatus,
     onToggle: () -> Unit
 ) {
     val buttonColor by animateColorAsState(
-        targetValue = if (isVoiceModeOn) EmeraldNeon else CyanNeon,
-        label = "btnColor"
+        targetValue = if (isVoiceModeOn) AppleGreenDark else AppleTheme.colors.accent,
+        animationSpec = tween(300),
+        label = "btn_color"
     )
 
     Button(
         onClick = onToggle,
         modifier = Modifier
             .fillMaxWidth()
-            .height(58.dp)
+            .height(52.dp)
+            .appleBounceClick(pressedScale = 0.96f)
             .testTag("voice_mode_toggle_button"),
         shape = RoundedCornerShape(18.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
+        colors = ButtonDefaults.buttonColors(
+            containerColor = buttonColor,
+            contentColor = Color.White
+        ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Icon(
-                imageVector = if (isVoiceModeOn) Icons.Default.Mic else Icons.Default.MicOff,
+                imageVector = if (status != AgentStatus.IDLE) Icons.Default.Stop else Icons.Default.Mic,
                 contentDescription = null,
-                tint = Color.Black,
-                modifier = Modifier.size(26.dp)
+                modifier = Modifier.size(20.dp)
             )
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = if (isVoiceModeOn) "VOICE MODE ON" else "ACTIVATE VOICE MODE",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 1.2.sp
-                ),
-                color = Color.Black
+                text = if (isVoiceModeOn) "Live Voice Active • Tap to Stop" else "Start Voice Task",
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
             )
         }
     }
 }
 
+/**
+ * Apple-style Clean Action Card (24dp rounded squircle with subtle border).
+ */
 @Composable
-private fun QuickActionCard(
+private fun AppleActionCard(
     title: String,
     subtitle: String,
     icon: ImageVector,
-    tint: Color,
+    iconBg: Color,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Card(
-        modifier = Modifier
-            .width(130.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = CyberDark800),
-        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF1E293B)))
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(24.dp))
+            .background(AppleTheme.colors.surface)
+            .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(24.dp))
+            .appleBounceClick(pressedScale = 0.95f, onClick = onClick)
+            .padding(16.dp)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column {
             Box(
                 modifier = Modifier
                     .size(36.dp)
-                    .clip(CircleShape)
-                    .background(tint.copy(alpha = 0.15f)),
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(iconBg),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(icon, contentDescription = title, tint = tint, modifier = Modifier.size(20.dp))
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
             }
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                color = Color.White
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                color = AppleTheme.colors.textPrimary
             )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
-                color = TextMuted,
+                color = AppleTheme.colors.textMuted,
                 maxLines = 1
             )
         }
     }
 }
 
+/**
+ * Apple Info Pill for real data display (Date, System Readiness).
+ */
 @Composable
-private fun InfoCard(
+private fun AppleInfoPill(
     title: String,
-    value: String,
-    caption: String,
+    subtitle: String,
     icon: ImageVector,
     tint: Color,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = CyberDark800),
-        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF1E293B)))
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(AppleTheme.colors.surface)
+            .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(20.dp))
+            .padding(14.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Icon(icon, contentDescription = title, tint = tint, modifier = Modifier.size(20.dp))
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                color = Color.White
-            )
-            Text(
-                text = caption,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                color = TextMuted
-            )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(RoundedCornerShape(9.dp))
+                    .background(tint.copy(alpha = 0.16f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = tint,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = AppleTheme.colors.textMuted
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                    color = AppleTheme.colors.textPrimary,
+                    maxLines = 1
+                )
+            }
         }
     }
 }
 
+/**
+ * Apple Ask Maya Composer Bar with rounded 20dp input and clean controls.
+ */
 @Composable
-fun AskMayaBottomBar(
+fun AppleAskMayaComposer(
     text: String,
     onTextChange: (String) -> Unit,
     onSend: () -> Unit,
@@ -560,78 +654,92 @@ fun AskMayaBottomBar(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = CyberDark900,
-        tonalElevation = 8.dp
+        color = AppleTheme.colors.background,
+        tonalElevation = 0.dp
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 14.dp, vertical = 10.dp)
+                .clip(RoundedCornerShape(22.dp))
+                .background(AppleTheme.colors.surface)
+                .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(22.dp))
+                .padding(horizontal = 8.dp, vertical = 6.dp)
         ) {
-            IconButton(
-                onClick = {},
-                modifier = Modifier.size(42.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.AttachFile,
-                    contentDescription = "Attachment",
-                    tint = TextMuted
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier.size(38.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AttachFile,
+                        contentDescription = "Attachment",
+                        tint = AppleTheme.colors.textMuted,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = onTextChange,
+                    placeholder = {
+                        Text(
+                            text = "Ask Maya anything...",
+                            color = AppleTheme.colors.textMuted,
+                            fontSize = 14.sp
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("ask_maya_input_field"),
+                    shape = RoundedCornerShape(20.dp),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedTextColor = AppleTheme.colors.textPrimary,
+                        unfocusedTextColor = AppleTheme.colors.textPrimary
+                    )
                 )
-            }
 
-            OutlinedTextField(
-                value = text,
-                onValueChange = onTextChange,
-                placeholder = { Text("Ask Maya anything...", color = TextMuted, fontSize = 14.sp) },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(52.dp)
-                    .testTag("ask_maya_input_field"),
-                shape = RoundedCornerShape(26.dp),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = CyanNeon,
-                    unfocusedBorderColor = Color(0xFF334155),
-                    focusedContainerColor = CyberDark800,
-                    unfocusedContainerColor = CyberDark800,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
-                )
-            )
+                IconButton(
+                    onClick = onMicClick,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(AppleTheme.colors.surfaceSecondary)
+                        .testTag("voice_mic_button")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Mic,
+                        contentDescription = "Voice Input",
+                        tint = AppleTheme.colors.accent,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
 
-            Spacer(modifier = Modifier.width(6.dp))
+                Spacer(modifier = Modifier.width(6.dp))
 
-            IconButton(
-                onClick = onMicClick,
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(CyberDark800)
-                    .testTag("voice_mic_button")
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Mic,
-                    contentDescription = "Voice Input",
-                    tint = CyanNeon
-                )
-            }
-
-            Spacer(modifier = Modifier.width(4.dp))
-
-            IconButton(
-                onClick = onSend,
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(CyanNeon)
-                    .testTag("send_button")
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Send,
-                    contentDescription = "Send",
-                    tint = Color.Black
-                )
+                IconButton(
+                    onClick = onSend,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(if (text.isNotBlank()) AppleTheme.colors.accent else AppleTheme.colors.surfaceSecondary)
+                        .testTag("send_button")
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Send,
+                        contentDescription = "Send",
+                        tint = if (text.isNotBlank()) Color.White else AppleTheme.colors.textMuted,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
     }

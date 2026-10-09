@@ -20,6 +20,14 @@ class MayaPreferences(context: Context) {
     )
     val geminiApiKey: StateFlow<String> = _geminiApiKey.asStateFlow()
 
+    private val _themeMode = MutableStateFlow(prefs.getString("theme_mode", "dark") ?: "dark")
+    val themeMode: StateFlow<String> = _themeMode.asStateFlow()
+
+    fun setThemeMode(mode: String) {
+        prefs.edit().putString("theme_mode", mode).apply()
+        _themeMode.value = mode
+    }
+
     private val _isVoiceModeOn = MutableStateFlow(prefs.getBoolean("voice_mode_on", false))
     val isVoiceModeOn: StateFlow<Boolean> = _isVoiceModeOn.asStateFlow()
 

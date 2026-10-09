@@ -21,14 +21,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,15 +53,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.repository.MayaPreferences
-import com.example.ui.theme.CyanNeon
-import com.example.ui.theme.CyberDark700
-import com.example.ui.theme.CyberDark800
-import com.example.ui.theme.CyberDark900
-import com.example.ui.theme.EmeraldNeon
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.VioletNeon
+import com.example.ui.components.appleBounceClick
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleGreenDark
+import com.example.ui.theme.ApplePurpleDark
+import com.example.ui.theme.AppleTheme
 
+/**
+ * 🍎 Maya AI Messages & WhatsApp — Apple Messages / Settings-Inspired Screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhatsAppScreen(
@@ -84,62 +81,90 @@ fun WhatsAppScreen(
                 title = {
                     Text(
                         text = "Messages & WhatsApp",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.3).sp
+                        ),
+                        color = AppleTheme.colors.textPrimary
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = CyberDark900)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppleTheme.colors.background
+                )
             )
         },
-        containerColor = CyberDark900
+        containerColor = AppleTheme.colors.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Auto Reply Banner (Section 28)
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = CyberDark800),
-                border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(EmeraldNeon.copy(alpha = 0.5f)))
+            // Auto Reply Banner (Apple Grouped Container 24dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(AppleTheme.colors.surface)
+                    .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(24.dp))
+                    .padding(18.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             Box(
                                 modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(CircleShape)
-                                    .background(EmeraldNeon.copy(alpha = 0.2f)),
+                                    .size(42.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(AppleGreenDark.copy(alpha = 0.16f)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null, tint = EmeraldNeon, modifier = Modifier.size(20.dp))
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Chat,
+                                    contentDescription = null,
+                                    tint = AppleGreenDark,
+                                    modifier = Modifier.size(22.dp)
+                                )
                             }
-                            Spacer(modifier = Modifier.width(10.dp))
+                            Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
                                     text = "WhatsApp Auto-Reply",
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = Color.White
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                                    color = AppleTheme.colors.textPrimary
                                 )
                                 Text(
                                     text = "Notification → Understand → Generate → Send",
-                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                    color = TextMuted
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = AppleTheme.colors.textMuted
                                 )
                             }
                         }
@@ -150,16 +175,21 @@ fun WhatsAppScreen(
                                 preferences.setWhatsAppAutoReply(it, customStyle)
                                 Toast.makeText(context, if (it) "Auto-Reply Enabled" else "Auto-Reply Disabled", Toast.LENGTH_SHORT).show()
                             },
-                            colors = SwitchDefaults.colors(checkedThumbColor = EmeraldNeon, checkedTrackColor = CyberDark700)
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color.White,
+                                checkedTrackColor = AppleGreenDark,
+                                uncheckedThumbColor = Color.White,
+                                uncheckedTrackColor = AppleTheme.colors.surfaceSecondary
+                            )
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
                         text = "Reply Tone / Persona Style:",
-                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                        color = TextPrimary
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = AppleTheme.colors.textPrimary
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -172,11 +202,14 @@ fun WhatsAppScreen(
                         },
                         label = { Text("Tone prompt") },
                         modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = EmeraldNeon,
-                            unfocusedBorderColor = Color(0xFF334155),
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            focusedBorderColor = AppleGreenDark,
+                            unfocusedBorderColor = AppleTheme.colors.border,
+                            focusedTextColor = AppleTheme.colors.textPrimary,
+                            unfocusedTextColor = AppleTheme.colors.textPrimary,
+                            focusedContainerColor = AppleTheme.colors.surfaceSecondary.copy(alpha = 0.5f),
+                            unfocusedContainerColor = AppleTheme.colors.surfaceSecondary.copy(alpha = 0.3f)
                         )
                     )
                 }
@@ -184,57 +217,92 @@ fun WhatsAppScreen(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            // Section 34: Group Report Generator
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = CyberDark800),
-                border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF1E293B)))
+            // Group Report Generator (Apple Grouped Container 24dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(AppleTheme.colors.surface)
+                    .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(24.dp))
+                    .padding(18.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Groups, contentDescription = null, tint = CyanNeon, modifier = Modifier.size(22.dp))
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(AppleBlueDark.copy(alpha = 0.16f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Groups,
+                                contentDescription = null,
+                                tint = AppleBlueDark,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = "WhatsApp Group Report (group-report)",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White
+                            text = "WhatsApp Group Report",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                            color = AppleTheme.colors.textPrimary
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "Maya can analyze dense chat histories across project and family groups, extracting action items and decisions.",
+                        text = "Maya can analyze dense chat histories across project and family groups, extracting action items and key decisions.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextMuted
+                        color = AppleTheme.colors.textSecondary
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Button(
                         onClick = {
                             groupReportGenerated = "📊 GROUP EXECUTIVE SUMMARY\n• Project Alpha: 2 blockers resolved by dev team\n• Meeting: Scheduled for Friday 3:00 PM\n• Action item: Review PR #42 & release staging build"
                         },
-                        modifier = Modifier.fillMaxWidth().height(44.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = CyanNeon)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(46.dp)
+                            .appleBounceClick(pressedScale = 0.95f),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AppleBlueDark
+                        )
                     ) {
-                        Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color.Black, modifier = Modifier.size(16.dp))
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Generate Group Report", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "Generate Group Report",
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
+                        )
                     }
 
                     groupReportGenerated?.let { rep ->
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(CyberDark700)
-                                .padding(12.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(AppleTheme.colors.surfaceSecondary)
+                                .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(14.dp))
+                                .padding(14.dp)
                         ) {
-                            Text(text = rep, style = MaterialTheme.typography.bodySmall, color = TextPrimary, lineHeight = 18.sp)
+                            Text(
+                                text = rep,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = AppleTheme.colors.textPrimary,
+                                lineHeight = 18.sp
+                            )
                         }
                     }
                 }
@@ -242,31 +310,44 @@ fun WhatsAppScreen(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            // Notification Announcements
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = CyberDark800),
-                border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF1E293B)))
+            // Notification Announcements (Apple Grouped Container 24dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(AppleTheme.colors.surface)
+                    .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(24.dp))
+                    .padding(18.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.NotificationsActive, contentDescription = null, tint = VioletNeon, modifier = Modifier.size(22.dp))
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = "Notification Voice Announce",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(ApplePurpleDark.copy(alpha = 0.16f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.NotificationsActive,
+                            contentDescription = null,
+                            tint = ApplePurpleDark,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Text(
-                        text = "Maya announces important sender names and messages aloud through your headphones or speaker.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextMuted
-                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = "Notification Voice Announce",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                            color = AppleTheme.colors.textPrimary
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Maya announces important sender names and messages aloud through your headphones or speaker.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppleTheme.colors.textSecondary
+                        )
+                    }
                 }
             }
         }

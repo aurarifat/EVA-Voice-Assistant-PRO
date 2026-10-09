@@ -21,12 +21,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,15 +50,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.repository.MayaPreferences
-import com.example.ui.theme.CyanNeon
-import com.example.ui.theme.CyberDark700
-import com.example.ui.theme.CyberDark800
-import com.example.ui.theme.CyberDark900
-import com.example.ui.theme.EmeraldNeon
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.VioletNeon
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleGreenDark
+import com.example.ui.theme.AppleOrangeDark
+import com.example.ui.theme.ApplePurpleDark
+import com.example.ui.theme.AppleTheme
 
+/**
+ * 🍎 Maya AI External Connectors — Apple-Inspired Services & Integrations.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConnectorsScreen(
@@ -79,35 +76,55 @@ fun ConnectorsScreen(
                 title = {
                     Text(
                         text = "External Connectors",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.3).sp
+                        ),
+                        color = AppleTheme.colors.textPrimary
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = CyberDark900)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppleTheme.colors.background
+                )
             )
         },
-        containerColor = CyberDark900
+        containerColor = AppleTheme.colors.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // Section 37: Telegram Connector
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = CyberDark800),
-                border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF0088CC)))
+            // Telegram Connector Grouped Container (24dp radius)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(AppleTheme.colors.surface)
+                    .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(24.dp))
+                    .padding(18.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -116,39 +133,49 @@ fun ConnectorsScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0x330088CC)),
+                                    .size(42.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xFF0088CC).copy(alpha = 0.16f)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, tint = Color(0xFF0088CC), modifier = Modifier.size(20.dp))
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Send,
+                                    contentDescription = null,
+                                    tint = Color(0xFF0088CC),
+                                    modifier = Modifier.size(20.dp)
+                                )
                             }
-                            Spacer(modifier = Modifier.width(10.dp))
+                            Spacer(modifier = Modifier.width(12.dp))
                             Text(
-                                text = "Telegram Bot Connector",
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = Color.White
+                                text = "Telegram Bot Bridge",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = AppleTheme.colors.textPrimary
                             )
                         }
 
                         if (isConnected) {
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(EmeraldNeon.copy(alpha = 0.2f))
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(AppleGreenDark.copy(alpha = 0.16f))
+                                    .padding(horizontal = 8.dp, vertical = 3.dp)
                             ) {
-                                Text("CONNECTED", color = EmeraldNeon, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                Text(
+                                    text = "CONNECTED",
+                                    color = AppleGreenDark,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        text = "Setup Workflow (Section 37):\n1. Open @BotFather on Telegram\n2. Send /newbot & name it\n3. Copy the Bot Token\n4. Paste token below and click Connect",
+                        text = "Connect Maya to your Telegram account to send voice memos, commands, and alerts directly from any device.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextMuted,
+                        color = AppleTheme.colors.textSecondary,
                         lineHeight = 18.sp
                     )
 
@@ -161,15 +188,18 @@ fun ConnectorsScreen(
                         placeholder = { Text("123456789:ABCdefGhIJKlmNoPQRstuVwxyZ") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
+                        shape = RoundedCornerShape(14.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF0088CC),
-                            unfocusedBorderColor = Color(0xFF334155),
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            unfocusedBorderColor = AppleTheme.colors.border,
+                            focusedTextColor = AppleTheme.colors.textPrimary,
+                            unfocusedTextColor = AppleTheme.colors.textPrimary,
+                            focusedContainerColor = AppleTheme.colors.surfaceSecondary.copy(alpha = 0.4f),
+                            unfocusedContainerColor = AppleTheme.colors.surfaceSecondary.copy(alpha = 0.25f)
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -183,75 +213,139 @@ fun ConnectorsScreen(
                                     Toast.makeText(context, "Telegram Bot connected successfully!", Toast.LENGTH_SHORT).show()
                                 }
                             },
-                            modifier = Modifier.weight(1f).height(44.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0088CC))
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(44.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF0088CC)
+                            )
                         ) {
-                            Text("Connect Bot", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text(
+                                text = "Connect Bot",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold
+                            )
                         }
 
                         OutlinedButton(
                             onClick = {
-                                Toast.makeText(context, "Test alert sent to Telegram chat!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Test alert dispatched to Telegram!", Toast.LENGTH_SHORT).show()
                             },
                             modifier = Modifier.height(44.dp),
-                            shape = RoundedCornerShape(10.dp)
+                            shape = RoundedCornerShape(14.dp)
                         ) {
-                            Text("Send Test Alert", color = CyanNeon)
+                            Text(
+                                text = "Send Test Alert",
+                                color = AppleTheme.colors.accent,
+                                fontWeight = FontWeight.SemiBold
+                            )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "MORE INTEGRATIONS",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = AppleTheme.colors.textMuted,
+                    letterSpacing = 0.5.sp
+                ),
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Other Connectors (GitHub, Notion, Google Services)
-            ConnectorItemCard(name = "GitHub", category = "Code", description = "Repo commits, issue management, PR tracking", color = Color(0xFF8B5CF6))
+            ConnectorItemCard(
+                name = "GitHub",
+                category = "Source Control",
+                description = "Repo commits, issue management, and PR tracking",
+                color = ApplePurpleDark
+            )
             Spacer(modifier = Modifier.height(10.dp))
-            ConnectorItemCard(name = "Notion", category = "Notes & Tasks", description = "Sync notes, tasks, kanban boards with Maya memory", color = Color(0xFF10B981))
+            ConnectorItemCard(
+                name = "Notion",
+                category = "Knowledge Base",
+                description = "Sync notes, tasks, and kanban boards with Maya memory",
+                color = AppleGreenDark
+            )
             Spacer(modifier = Modifier.height(10.dp))
-            ConnectorItemCard(name = "Google Services", category = "Calendar & Drive", description = "Access agenda, search documents, manage files", color = Color(0xFFF59E0B))
+            ConnectorItemCard(
+                name = "Google Services",
+                category = "Calendar & Drive",
+                description = "Access schedule, search documents, and manage Drive files",
+                color = AppleOrangeDark
+            )
         }
     }
 }
 
 @Composable
 private fun ConnectorItemCard(name: String, category: String, description: String, color: Color) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = CyberDark800),
-        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF1E293B)))
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(AppleTheme.colors.surface)
+            .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(20.dp))
+            .padding(14.dp)
     ) {
         Row(
-            modifier = Modifier.padding(14.dp).fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(11.dp))
                     .background(color.copy(alpha = 0.15f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Link, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
+                Icon(
+                    imageVector = Icons.Default.Link,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(20.dp)
+                )
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = name, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = Color.White)
+                    Text(
+                        text = name,
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = AppleTheme.colors.textPrimary
+                    )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = "• $category", style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp), color = TextMuted)
+                    Text(
+                        text = "• $category",
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                        color = AppleTheme.colors.textMuted
+                    )
                 }
-                Text(text = description, style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppleTheme.colors.textSecondary
+                )
             }
             Spacer(modifier = Modifier.width(8.dp))
             OutlinedButton(
                 onClick = {},
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.height(34.dp)
             ) {
-                Text("Link", color = CyanNeon, fontSize = 12.sp)
+                Text(
+                    text = "Link",
+                    color = AppleTheme.colors.accent,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }

@@ -56,7 +56,8 @@ class MayaApplication : Application() {
         voiceProcessor = VoiceProcessor()
 
         geminiClient = GeminiAgentClient(
-            apiKeyProvider = { preferences.geminiApiKey.value }
+            apiKeyProvider = { preferences.geminiApiKey.value },
+            modelProvider = { preferences.geminiModel.value }
         )
 
         taskExecutionEngine = TaskExecutionEngine(

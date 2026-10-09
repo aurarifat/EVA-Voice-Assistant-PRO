@@ -22,7 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
-import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Mic
@@ -62,18 +62,20 @@ import com.example.ai.SpeechManager
 import com.example.data.model.ChatMessage
 import com.example.data.model.MessageSender
 import com.example.data.repository.MayaPreferences
-import com.example.ui.theme.CyanNeon
-import com.example.ui.theme.CyberDark700
-import com.example.ui.theme.CyberDark800
-import com.example.ui.theme.CyberDark900
-import com.example.ui.theme.EmeraldNeon
-import com.example.ui.theme.RoseNeon
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.VioletNeon
+import com.example.ui.components.appleBounceClick
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleGreenDark
+import com.example.ui.theme.AppleRedDark
+import com.example.ui.theme.AppleTheme
 import kotlinx.coroutines.launch
 import java.util.UUID
 
+/**
+ * 🍎 Maya AI Chat — Apple Messages-Inspired Conversation Interface.
+ *
+ * Clean, minimal, rounded message bubbles with native composer,
+ * attachment menus, and voice synthesis triggers.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
@@ -95,13 +97,15 @@ fun ChatScreen(
                 id = "m1",
                 sender = MessageSender.MAYA,
                 text = "Hello! I am Maya AI, your autonomous Android Agent. How can I help you navigate apps, analyze screens, or complete tasks today?",
-                executedActions = listOf("Initialized Gemini 3.5 Flash", "Accessibility Agent Ready")
+                executedActions = listOf("Initialized Gemini 2.5 Flash", "Accessibility Agent Ready")
             )
         )
     }
 
     LaunchedEffect(messages.size) {
-        listState.animateScrollToItem(messages.size - 1)
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
+        }
     }
 
     Scaffold(
@@ -111,99 +115,131 @@ fun ChatScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
-                                .size(10.dp)
+                                .size(34.dp)
                                 .clip(CircleShape)
-                                .background(EmeraldNeon)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
+                                .background(AppleTheme.colors.surfaceSecondary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "M",
+                                fontWeight = FontWeight.Bold,
+                                color = AppleTheme.colors.accent,
+                                fontSize = 16.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = "Maya AI Chat",
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = Color.White
+                                text = "Maya AI",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = (-0.3).sp
+                                ),
+                                color = AppleTheme.colors.textPrimary
                             )
-                            Text(
-                                text = "Screen Understanding & Agentic Voice",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                color = CyanNeon
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .clip(CircleShape)
+                                        .background(AppleGreenDark)
+                                )
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Text(
+                                    text = "Active Agent",
+                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                    color = AppleTheme.colors.textMuted
+                                )
+                            }
                         }
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = CyberDark900)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppleTheme.colors.background
+                )
             )
         },
-        containerColor = CyberDark900,
+        containerColor = AppleTheme.colors.background,
         bottomBar = {
-            Column(modifier = Modifier.background(CyberDark900)) {
-                selectedAttachment?.let { att ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Attached: $att",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = CyanNeon
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "✕",
-                            color = TextMuted,
-                            modifier = Modifier.clip(CircleShape).padding(4.dp)
-                        )
-                    }
-                }
-
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = CyberDark900,
-                    tonalElevation = 8.dp
+            // Apple Messages-Style Composer
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = AppleTheme.colors.background,
+                tonalElevation = 0.dp
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 10.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(AppleTheme.colors.surface)
+                        .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(24.dp))
+                        .padding(horizontal = 8.dp, vertical = 5.dp)
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp, vertical = 8.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box {
-                            IconButton(onClick = { showAttachmentMenu = true }) {
-                                Icon(Icons.Default.AttachFile, contentDescription = "Attachment", tint = TextMuted)
+                            IconButton(
+                                onClick = { showAttachmentMenu = true },
+                                modifier = Modifier
+                                    .size(34.dp)
+                                    .clip(CircleShape)
+                                    .background(AppleTheme.colors.surfaceSecondary)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Add Attachment",
+                                    tint = AppleTheme.colors.accent,
+                                    modifier = Modifier.size(18.dp)
+                                )
                             }
 
                             DropdownMenu(
                                 expanded = showAttachmentMenu,
                                 onDismissRequest = { showAttachmentMenu = false },
-                                modifier = Modifier.background(CyberDark800)
+                                modifier = Modifier.background(AppleTheme.colors.surface)
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("Image (.jpg / .png)", color = TextPrimary) },
-                                    leadingIcon = { Icon(Icons.Default.Image, contentDescription = null, tint = CyanNeon) },
+                                    text = { Text("Image (.jpg / .png)", color = AppleTheme.colors.textPrimary) },
+                                    leadingIcon = { Icon(Icons.Default.Image, contentDescription = null, tint = AppleTheme.colors.accent) },
                                     onClick = {
-                                        selectedAttachment = "sample_screen_ui.png"
+                                        selectedAttachment = "screen_capture.png"
                                         showAttachmentMenu = false
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text("Document (.pdf)", color = TextPrimary) },
-                                    leadingIcon = { Icon(Icons.Default.PictureAsPdf, contentDescription = null, tint = RoseNeon) },
+                                    text = { Text("Document (.pdf)", color = AppleTheme.colors.textPrimary) },
+                                    leadingIcon = { Icon(Icons.Default.PictureAsPdf, contentDescription = null, tint = AppleRedDark) },
                                     onClick = {
-                                        selectedAttachment = "report_spec.pdf"
+                                        selectedAttachment = "document_spec.pdf"
                                         showAttachmentMenu = false
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text("Markdown (.md)", color = TextPrimary) },
-                                    leadingIcon = { Icon(Icons.Default.Description, contentDescription = null, tint = EmeraldNeon) },
+                                    text = { Text("Markdown (.md)", color = AppleTheme.colors.textPrimary) },
+                                    leadingIcon = { Icon(Icons.Default.Description, contentDescription = null, tint = AppleGreenDark) },
                                     onClick = {
-                                        selectedAttachment = "workflow_tasks.md"
+                                        selectedAttachment = "workflow.md"
                                         showAttachmentMenu = false
                                     }
                                 )
@@ -213,38 +249,35 @@ fun ChatScreen(
                         OutlinedTextField(
                             value = inputText,
                             onValueChange = { inputText = it },
-                            placeholder = { Text("Ask Maya anything...", color = TextMuted, fontSize = 14.sp) },
+                            placeholder = { Text("Message Maya...", color = AppleTheme.colors.textMuted, fontSize = 14.sp) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(52.dp)
                                 .testTag("chat_input_field"),
-                            shape = RoundedCornerShape(26.dp),
+                            shape = RoundedCornerShape(20.dp),
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = CyanNeon,
-                                unfocusedBorderColor = Color(0xFF334155),
-                                focusedContainerColor = CyberDark800,
-                                unfocusedContainerColor = CyberDark800,
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedBorderColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedTextColor = AppleTheme.colors.textPrimary,
+                                unfocusedTextColor = AppleTheme.colors.textPrimary
                             )
                         )
 
-                        Spacer(modifier = Modifier.width(6.dp))
-
                         IconButton(
                             onClick = {
-                                inputText = "Open YouTube and play top Hindi songs."
+                                inputText = "Open YouTube and play top music."
                             },
                             modifier = Modifier
-                                .size(44.dp)
+                                .size(34.dp)
                                 .clip(CircleShape)
-                                .background(CyberDark800)
+                                .background(AppleTheme.colors.surfaceSecondary)
                         ) {
-                            Icon(Icons.Default.Mic, contentDescription = "Voice Input", tint = CyanNeon)
+                            Icon(Icons.Default.Mic, contentDescription = "Voice Input", tint = AppleTheme.colors.accent, modifier = Modifier.size(17.dp))
                         }
 
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
 
                         IconButton(
                             onClick = {
@@ -285,15 +318,21 @@ fun ChatScreen(
                                 }
                             },
                             modifier = Modifier
-                                .size(44.dp)
+                                .size(34.dp)
                                 .clip(CircleShape)
-                                .background(CyanNeon)
+                                .background(if (inputText.isNotBlank()) AppleTheme.colors.accent else AppleTheme.colors.surfaceSecondary)
+                                .appleBounceClick(pressedScale = 0.90f)
                                 .testTag("chat_send_button")
                         ) {
                             if (isGenerating) {
-                                CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
                             } else {
-                                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Color.Black)
+                                Icon(
+                                    Icons.AutoMirrored.Filled.Send,
+                                    contentDescription = "Send",
+                                    tint = if (inputText.isNotBlank()) Color.White else AppleTheme.colors.textMuted,
+                                    modifier = Modifier.size(16.dp)
+                                )
                             }
                         }
                     }
@@ -307,10 +346,13 @@ fun ChatScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 14.dp, vertical = 8.dp),
             state = listState,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(messages) { msg ->
-                ChatBubble(
+            items(
+                items = messages,
+                key = { it.id }
+            ) { msg ->
+                AppleChatBubble(
                     message = msg,
                     onSpeak = {
                         speechManager.speak(msg.text, preferences.selectedPersona.value)
@@ -321,8 +363,13 @@ fun ChatScreen(
     }
 }
 
+/**
+ * 🍎 Apple Messages-Style Chat Bubble.
+ * - User: System Accent Blue, white text, smooth 20dp corners
+ * - Maya: Elevated surface, primary text, subtle border
+ */
 @Composable
-private fun ChatBubble(message: ChatMessage, onSpeak: () -> Unit) {
+private fun AppleChatBubble(message: ChatMessage, onSpeak: () -> Unit) {
     val isUser = message.sender == MessageSender.USER
 
     Column(
@@ -333,37 +380,37 @@ private fun ChatBubble(message: ChatMessage, onSpeak: () -> Unit) {
             modifier = Modifier
                 .clip(
                     RoundedCornerShape(
-                        topStart = 18.dp,
-                        topEnd = 18.dp,
-                        bottomStart = if (isUser) 18.dp else 4.dp,
-                        bottomEnd = if (isUser) 4.dp else 18.dp
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
+                        bottomStart = if (isUser) 20.dp else 4.dp,
+                        bottomEnd = if (isUser) 4.dp else 20.dp
                     )
                 )
-                .background(if (isUser) CyanNeon else CyberDark800)
+                .background(if (isUser) AppleTheme.colors.accent else AppleTheme.colors.surface)
                 .border(
-                    1.dp,
-                    if (isUser) CyanNeon else Color(0xFF1E293B),
+                    0.5.dp,
+                    if (isUser) Color.Transparent else AppleTheme.colors.cardBorder,
                     RoundedCornerShape(
-                        topStart = 18.dp,
-                        topEnd = 18.dp,
-                        bottomStart = if (isUser) 18.dp else 4.dp,
-                        bottomEnd = if (isUser) 4.dp else 18.dp
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
+                        bottomStart = if (isUser) 20.dp else 4.dp,
+                        bottomEnd = if (isUser) 4.dp else 20.dp
                     )
                 )
-                .padding(14.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Column {
                 if (message.attachmentName != null) {
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0x33000000))
+                            .background(if (isUser) Color.White.copy(alpha = 0.2f) else AppleTheme.colors.surfaceSecondary)
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
                             text = "📎 ${message.attachmentName}",
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            color = if (isUser) Color.Black else CyanNeon
+                            color = if (isUser) Color.White else AppleTheme.colors.accent
                         )
                     }
                     Spacer(modifier = Modifier.height(6.dp))
@@ -371,25 +418,25 @@ private fun ChatBubble(message: ChatMessage, onSpeak: () -> Unit) {
 
                 Text(
                     text = message.text,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (isUser) Color.Black else TextPrimary,
-                    lineHeight = 20.sp
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp),
+                    color = if (isUser) Color.White else AppleTheme.colors.textPrimary,
+                    lineHeight = 21.sp
                 )
 
                 if (!isUser && message.executedActions.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         message.executedActions.forEach { action ->
                             Box(
                                 modifier = Modifier
                                     .padding(end = 6.dp)
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .background(CyberDark700)
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    .clip(RoundedCornerShape(50.dp))
+                                    .background(AppleTheme.colors.surfaceSecondary)
+                                    .padding(horizontal = 8.dp, vertical = 3.dp)
                             ) {
                                 Text(
-                                    text = "⚡ $action",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, color = CyanNeon)
+                                    text = action,
+                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, color = AppleTheme.colors.accent)
                                 )
                             }
                         }
@@ -397,7 +444,12 @@ private fun ChatBubble(message: ChatMessage, onSpeak: () -> Unit) {
                         Spacer(modifier = Modifier.weight(1f))
 
                         IconButton(onClick = onSpeak, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.VolumeUp, contentDescription = "Speak", tint = TextMuted, modifier = Modifier.size(16.dp))
+                            Icon(
+                                Icons.AutoMirrored.Filled.VolumeUp,
+                                contentDescription = "Speak",
+                                tint = AppleTheme.colors.textMuted,
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
                     }
                 }

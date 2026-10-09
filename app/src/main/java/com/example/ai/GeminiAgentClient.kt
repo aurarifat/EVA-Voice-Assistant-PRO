@@ -14,7 +14,8 @@ import java.io.ByteArrayOutputStream
 import java.util.concurrent.TimeUnit
 
 class GeminiAgentClient(
-    private val apiKeyProvider: () -> String
+    private val apiKeyProvider: () -> String,
+    private val modelProvider: () -> String = { "gemini-3.5-flash" }
 ) {
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -27,7 +28,7 @@ class GeminiAgentClient(
     suspend fun generateAgentResponse(
         userPrompt: String,
         systemInstruction: String = "You are Maya AI, an advanced Android agent capable of screen understanding, voice control, and automation.",
-        model: String = "gemini-3.5-flash"
+        model: String = modelProvider()
     ): Result<String> = withContext(Dispatchers.IO) {
         val apiKey = apiKeyProvider().trim()
         if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
@@ -93,7 +94,7 @@ class GeminiAgentClient(
     suspend fun analyzeImageWithVision(
         bitmap: Bitmap,
         prompt: String = "Analyze this camera frame or screen capture. Identify visible elements, text, buttons, objects, and recommend user interaction.",
-        model: String = "gemini-3.5-flash"
+        model: String = modelProvider()
     ): Result<String> = withContext(Dispatchers.IO) {
         val apiKey = apiKeyProvider().trim()
         if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {

@@ -2,7 +2,6 @@ package com.example.ui.screens
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Paint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -12,6 +11,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,11 +34,8 @@ import androidx.compose.material.icons.filled.CropFree
 import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -59,22 +56,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ai.GeminiAgentClient
-import com.example.ui.theme.CyanNeon
-import com.example.ui.theme.CyberDark800
-import com.example.ui.theme.CyberDark900
-import com.example.ui.theme.EmeraldNeon
-import com.example.ui.theme.RoseNeon
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.VioletNeon
+import com.example.ui.components.appleBounceClick
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleGreenDark
+import com.example.ui.theme.AppleRedDark
+import com.example.ui.theme.AppleTheme
 import kotlinx.coroutines.launch
 
+/**
+ * 🍎 Maya AI Scan & Vision — Apple Vision-Inspired Interface.
+ * Sleek 28dp viewfinder frame with minimal camera HUD and Apple shutter controls.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanVisionScreen(
@@ -104,32 +101,70 @@ fun ScanVisionScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Maya Vision & Scanner",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White
+                        text = "Vision & OCR",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.4).sp
+                        ),
+                        color = AppleTheme.colors.textPrimary
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 },
                 actions = {
-                    IconButton(onClick = { isFlashOn = !isFlashOn }) {
+                    IconButton(
+                        onClick = { isFlashOn = !isFlashOn },
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                    ) {
                         Icon(
                             imageVector = if (isFlashOn) Icons.Default.FlashOn else Icons.Default.FlashOff,
                             contentDescription = "Flash",
-                            tint = if (isFlashOn) CyanNeon else TextMuted
+                            tint = if (isFlashOn) Color(0xFFFFD60A) else AppleTheme.colors.textMuted,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
-                    IconButton(onClick = { isFrontCamera = !isFrontCamera }) {
-                        Icon(Icons.Default.Cameraswitch, contentDescription = "Switch Camera", tint = TextPrimary)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    IconButton(
+                        onClick = { isFrontCamera = !isFrontCamera },
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Cameraswitch,
+                            contentDescription = "Switch Camera",
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = CyberDark900)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppleTheme.colors.background
+                )
             )
         },
-        containerColor = CyberDark900
+        containerColor = AppleTheme.colors.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -139,175 +174,197 @@ fun ScanVisionScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Viewfinder Frame with Crosshairs, Grid, and Moving Scan Laser
+            // Apple Vision Viewfinder Frame (Rounded 28dp)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(340.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0xFF04060B))
-                    .border(2.dp, CyanNeon.copy(alpha = 0.7f), RoundedCornerShape(24.dp)),
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(Color(0xFF0A0C10))
+                    .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(28.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                // Futuristic Camera HUD Grid & Crosshairs
+                // Subtle Camera Grid & Scanner Line
                 androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
                     val w = size.width
                     val h = size.height
 
-                    // Grid lines
-                    for (i in 1..3) {
-                        val x = w * (i / 4f)
+                    // Grid lines (subtle white opacity)
+                    for (i in 1..2) {
+                        val x = w * (i / 3f)
                         drawLine(
-                            color = Color(0x2200F0FF),
+                            color = Color(0x1AFFFFFF),
                             start = Offset(x, 0f),
                             end = Offset(x, h),
                             strokeWidth = 1.dp.toPx()
                         )
-                        val y = h * (i / 4f)
+                        val y = h * (i / 3f)
                         drawLine(
-                            color = Color(0x2200F0FF),
+                            color = Color(0x1AFFFFFF),
                             start = Offset(0f, y),
                             end = Offset(w, y),
                             strokeWidth = 1.dp.toPx()
                         )
                     }
 
-                    // Center Crosshair
-                    val cx = w / 2f
-                    val cy = h / 2f
-                    val crossSize = 24.dp.toPx()
-                    drawLine(CyanNeon, Offset(cx - crossSize, cy), Offset(cx + crossSize, cy), 2.dp.toPx())
-                    drawLine(CyanNeon, Offset(cx, cy - crossSize), Offset(cx, cy + crossSize), 2.dp.toPx())
-
-                    // Scanning Laser Beam
+                    // Soft Scanner Laser
                     val beamY = h * laserY
                     drawLine(
-                        color = CyanNeon.copy(alpha = 0.85f),
+                        color = AppleBlueDark.copy(alpha = 0.7f),
                         start = Offset(0f, beamY),
                         end = Offset(w, beamY),
-                        strokeWidth = 3.dp.toPx()
+                        strokeWidth = 2.dp.toPx()
                     )
                 }
 
-                // Status tag
+                // Apple Status Pill at Top
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopStart)
-                        .padding(12.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(Color(0xCC000000))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .padding(14.dp)
+                        .clip(RoundedCornerShape(50.dp))
+                        .background(Color(0x99000000))
+                        .border(0.5.dp, Color(0x26FFFFFF), RoundedCornerShape(50.dp))
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
-                    Text(
-                        text = if (isAnalyzing) "ANALYZING SCENE..." else "MAYA VISION AI ACTIVE",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = CyanNeon,
-                            fontSize = 10.sp
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(if (isAnalyzing) AppleGreenDark else AppleBlueDark)
                         )
-                    )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (isAnalyzing) "Analyzing Screen..." else "Vision Ready",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Action Buttons: Capture & Record
+            // Apple Shutter & Control Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Record / Stream mode button
                 IconButton(
                     onClick = { isRecording = !isRecording },
                     modifier = Modifier
-                        .size(52.dp)
+                        .size(48.dp)
                         .clip(CircleShape)
-                        .background(CyberDark800)
+                        .background(AppleTheme.colors.surface)
+                        .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.Default.FiberManualRecord,
                         contentDescription = "Record",
-                        tint = if (isRecording) RoseNeon else TextMuted,
-                        modifier = Modifier.size(28.dp)
+                        tint = if (isRecording) AppleRedDark else AppleTheme.colors.textMuted,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
 
-                // Main Capture Button
-                IconButton(
-                    onClick = {
-                        isAnalyzing = true
-                        scope.launch {
-                            val dummyBitmap = Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888).apply {
-                                val canvas = Canvas(this)
-                                canvas.drawColor(android.graphics.Color.DKGRAY)
-                            }
-                            val res = geminiClient.analyzeImageWithVision(dummyBitmap)
-                            isAnalyzing = false
-                            visionResult = res.getOrDefault("Detected screen with interactive buttons.")
-                        }
-                    },
+                // Apple Camera Shutter Button (Outer ring + inner filled circle)
+                Box(
                     modifier = Modifier
-                        .size(72.dp)
+                        .size(76.dp)
                         .clip(CircleShape)
-                        .background(CyanNeon)
-                        .testTag("capture_button")
+                        .border(3.5.dp, AppleTheme.colors.textPrimary.copy(alpha = 0.7f), CircleShape)
+                        .padding(5.dp)
+                        .clip(CircleShape)
+                        .background(AppleTheme.colors.accent)
+                        .appleBounceClick(pressedScale = 0.90f) {
+                            if (!isAnalyzing) {
+                                isAnalyzing = true
+                                scope.launch {
+                                    val dummyBitmap = Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888).apply {
+                                        val canvas = Canvas(this)
+                                        canvas.drawColor(android.graphics.Color.DKGRAY)
+                                    }
+                                    val res = geminiClient.analyzeImageWithVision(dummyBitmap)
+                                    isAnalyzing = false
+                                    visionResult = res.getOrDefault("Detected screen with interactive buttons.")
+                                }
+                            }
+                        }
+                        .testTag("capture_button"),
+                    contentAlignment = Alignment.Center
                 ) {
                     if (isAnalyzing) {
-                        CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(32.dp), strokeWidth = 3.dp)
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.PhotoCamera,
-                            contentDescription = "Capture Frame",
-                            tint = Color.Black,
-                            modifier = Modifier.size(36.dp)
-                        )
+                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(26.dp), strokeWidth = 2.5.dp)
                     }
                 }
 
+                // Clear button
                 IconButton(
                     onClick = { visionResult = null },
                     modifier = Modifier
-                        .size(52.dp)
+                        .size(48.dp)
                         .clip(CircleShape)
-                        .background(CyberDark800)
+                        .background(AppleTheme.colors.surface)
+                        .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
-                        contentDescription = "Clear",
-                        tint = TextMuted,
-                        modifier = Modifier.size(24.dp)
+                        contentDescription = "Reset",
+                        tint = AppleTheme.colors.textMuted,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Vision Analysis Result Output Card
+            // Vision Analysis Result Report (Apple 24dp Card)
             AnimatedVisibility(visible = visionResult != null || isAnalyzing) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = CyberDark800),
-                    border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(CyanNeon.copy(alpha = 0.5f)))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(AppleTheme.colors.surface)
+                        .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(24.dp))
+                        .padding(18.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Visibility, contentDescription = null, tint = CyanNeon, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(AppleBlueDark.copy(alpha = 0.16f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Visibility,
+                                    contentDescription = null,
+                                    tint = AppleBlueDark,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = "VISION INTELLIGENCE REPORT",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = CyanNeon
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    letterSpacing = 0.5.sp
+                                ),
+                                color = AppleTheme.colors.accent
                             )
                         }
 
                         Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
-                            text = visionResult ?: "Extracting visual tokens, UI bounding boxes, and object labels...",
+                            text = visionResult ?: "Extracting visual tokens, UI bounding boxes, and clickable elements...",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White,
-                            lineHeight = 20.sp
+                            color = AppleTheme.colors.textPrimary,
+                            lineHeight = 21.sp
                         )
                     }
                 }

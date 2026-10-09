@@ -22,14 +22,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Extension
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,15 +52,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.SkillItem
 import com.example.data.repository.MemoryAndTaskRepository
-import com.example.ui.theme.CyanNeon
-import com.example.ui.theme.CyberDark700
-import com.example.ui.theme.CyberDark800
-import com.example.ui.theme.CyberDark900
-import com.example.ui.theme.EmeraldNeon
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.VioletNeon
+import com.example.ui.components.appleBounceClick
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleTheme
 
+/**
+ * 🍎 Maya AI Skill Store — Apple App Store-Inspired Intelligence Catalog.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SkillsScreen(
@@ -88,75 +82,116 @@ fun SkillsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Maya Skill Store",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White
+                        text = "Skill Directory",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.3).sp
+                        ),
+                        color = AppleTheme.colors.textPrimary
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = CyberDark900)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppleTheme.colors.background
+                )
             )
         },
-        containerColor = CyberDark900
+        containerColor = AppleTheme.colors.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // Search Input (Section 33)
+            // Apple Search Input (iOS Spotlight style)
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text("Search skills (e.g. youtube-script, coding-agent)...", color = TextMuted, fontSize = 13.sp) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = TextMuted) },
-                modifier = Modifier.fillMaxWidth().height(52.dp),
+                placeholder = {
+                    Text(
+                        text = "Search skills (e.g. youtube-script, coding)...",
+                        color = AppleTheme.colors.textMuted,
+                        fontSize = 14.sp
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        tint = AppleTheme.colors.textMuted,
+                        modifier = Modifier.size(20.dp)
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = CyanNeon,
-                    unfocusedBorderColor = Color(0xFF334155),
-                    focusedContainerColor = CyberDark800,
-                    unfocusedContainerColor = CyberDark800,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
+                    focusedBorderColor = AppleBlueDark,
+                    unfocusedBorderColor = AppleTheme.colors.border,
+                    focusedContainerColor = AppleTheme.colors.surfaceSecondary.copy(alpha = 0.5f),
+                    unfocusedContainerColor = AppleTheme.colors.surfaceSecondary.copy(alpha = 0.35f),
+                    focusedTextColor = AppleTheme.colors.textPrimary,
+                    unfocusedTextColor = AppleTheme.colors.textPrimary
                 )
             )
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Categories horizontal bar
+            // iOS Segmented / Pill Filter Bar
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(categories) { cat ->
+                items(
+                    items = categories,
+                    key = { it }
+                ) { cat ->
                     val isSelected = selectedCategory == cat
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(if (isSelected) CyanNeon else CyberDark800)
-                            .clickable { selectedCategory = cat }
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(
+                                if (isSelected) AppleTheme.colors.accent else AppleTheme.colors.surfaceSecondary
+                            )
+                            .appleBounceClick(pressedScale = 0.94f) { selectedCategory = cat }
+                            .padding(horizontal = 14.dp, vertical = 7.dp)
                     ) {
                         Text(
                             text = cat,
                             style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                             ),
-                            color = if (isSelected) Color.Black else TextPrimary
+                            color = if (isSelected) Color.White else AppleTheme.colors.textSecondary
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Skills List
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(filteredSkills) { skill ->
+                items(
+                    items = filteredSkills,
+                    key = { it.id }
+                ) { skill ->
                     SkillCard(skill = skill, onRun = {
                         Toast.makeText(context, "Executing skill: ${skill.name}", Toast.LENGTH_SHORT).show()
                     })
@@ -168,24 +203,31 @@ fun SkillsScreen(
 
 @Composable
 private fun SkillCard(skill: SkillItem, onRun: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = CyberDark800),
-        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF1E293B)))
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(AppleTheme.colors.surface)
+            .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(20.dp))
+            .padding(14.dp)
     ) {
         Row(
-            modifier = Modifier.padding(14.dp).fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(42.dp)
-                    .clip(CircleShape)
-                    .background(CyanNeon.copy(alpha = 0.15f)),
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(AppleBlueDark.copy(alpha = 0.14f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Extension, contentDescription = null, tint = CyanNeon, modifier = Modifier.size(22.dp))
+                Icon(
+                    imageVector = Icons.Default.Extension,
+                    contentDescription = null,
+                    tint = AppleBlueDark,
+                    modifier = Modifier.size(22.dp)
+                )
             }
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -194,39 +236,55 @@ private fun SkillCard(skill: SkillItem, onRun: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = skill.name,
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = AppleTheme.colors.textPrimary
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(CyberDark700)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(AppleTheme.colors.surfaceSecondary)
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
-                        Text(text = skill.category, style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, color = CyanNeon))
+                        Text(
+                            text = skill.category,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 10.sp,
+                                color = AppleTheme.colors.accent,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(3.dp))
 
                 Text(
                     text = skill.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextMuted,
+                    color = AppleTheme.colors.textSecondary,
                     lineHeight = 16.sp
                 )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(10.dp))
 
             Button(
                 onClick = onRun,
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = CyanNeon),
-                modifier = Modifier.height(36.dp)
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppleBlueDark
+                ),
+                modifier = Modifier
+                    .height(34.dp)
+                    .appleBounceClick(pressedScale = 0.94f)
             ) {
-                Text("Run", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                Text(
+                    text = "Run",
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.sp
+                )
             }
         }
     }

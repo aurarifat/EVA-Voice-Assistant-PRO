@@ -16,20 +16,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CropFree
-import androidx.compose.material.icons.filled.Hearing
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.NearMe
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,43 +37,51 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.AgentStatus
-import com.example.ui.theme.CyanNeon
-import com.example.ui.theme.CyberDark700
-import com.example.ui.theme.CyberDark800
-import com.example.ui.theme.EmeraldNeon
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.VioletNeon
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleGreenDark
+import com.example.ui.theme.AppleIndigoDark
+import com.example.ui.theme.AppleOrangeDark
+import com.example.ui.theme.ApplePinkDark
+import com.example.ui.theme.ApplePurpleDark
+import com.example.ui.theme.AppleTealDark
+import com.example.ui.theme.AppleTheme
 
 data class PipelineStage(
     val title: String,
     val subtitle: String,
     val icon: ImageVector,
+    val iconBg: Color,
     val activeStatuses: List<AgentStatus>
 )
 
+/**
+ * 🍎 Apple-Inspired Agent Execution Pipeline Visualizer.
+ * Clean, structured 24dp card showing the autonomous phone task flow.
+ */
 @Composable
 fun ExecutionPipelineVisualizer(
     currentStatus: AgentStatus,
     modifier: Modifier = Modifier
 ) {
     val stages = listOf(
-        PipelineStage("1. USER VOICE", "Listening to instruction", Icons.Default.Mic, listOf(AgentStatus.LISTENING)),
-        PipelineStage("2. UNDERSTAND & PLAN", "Gemini AI Task decomposition", Icons.Default.Psychology, listOf(AgentStatus.THINKING)),
-        PipelineStage("3. OPEN APP", "Launch target Android application", Icons.Default.PhoneAndroid, listOf(AgentStatus.NAVIGATING)),
-        PipelineStage("4. READ SCREEN", "Screen Intelligence Engine UI tree", Icons.Default.Visibility, listOf(AgentStatus.ANALYSING)),
-        PipelineStage("5. LOCATE ELEMENT", "Accessibility Node or X/Y Coords", Icons.Default.CropFree, listOf(AgentStatus.LOCATING)),
-        PipelineStage("6. TAP / SWIPE / TYPE", "Dispatch accessibility/coordinate action", Icons.Default.TouchApp, listOf(AgentStatus.EXECUTING, AgentStatus.SCROLLING)),
-        PipelineStage("7. TASK COMPLETE", "Finished end-to-end phone flow", Icons.Default.CheckCircle, listOf(AgentStatus.COMPLETED))
+        PipelineStage("1. USER VOICE", "Listening to instruction", Icons.Default.Mic, AppleTealDark, listOf(AgentStatus.LISTENING)),
+        PipelineStage("2. UNDERSTAND & PLAN", "Gemini AI task decomposition", Icons.Default.Psychology, ApplePurpleDark, listOf(AgentStatus.THINKING)),
+        PipelineStage("3. OPEN APP", "Launch target application", Icons.Default.PhoneAndroid, AppleBlueDark, listOf(AgentStatus.NAVIGATING)),
+        PipelineStage("4. READ SCREEN", "Screen Intelligence Engine UI tree", Icons.Default.Visibility, AppleIndigoDark, listOf(AgentStatus.ANALYSING)),
+        PipelineStage("5. LOCATE ELEMENT", "Accessibility node or X/Y pixels", Icons.Default.CropFree, AppleOrangeDark, listOf(AgentStatus.LOCATING)),
+        PipelineStage("6. TAP / SWIPE / TYPE", "Dispatch accessibility/coordinate action", Icons.Default.TouchApp, ApplePinkDark, listOf(AgentStatus.EXECUTING, AgentStatus.SCROLLING)),
+        PipelineStage("7. TASK COMPLETE", "Finished end-to-end phone task", Icons.Default.CheckCircle, AppleGreenDark, listOf(AgentStatus.COMPLETED))
     )
 
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = CyberDark800),
-        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF1E293B)))
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(AppleTheme.colors.surface)
+            .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(24.dp))
+            .padding(18.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -89,26 +90,36 @@ fun ExecutionPipelineVisualizer(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
-                            .size(10.dp)
+                            .size(8.dp)
                             .clip(CircleShape)
-                            .background(if (currentStatus != AgentStatus.IDLE) EmeraldNeon else CyanNeon)
+                            .background(if (currentStatus != AgentStatus.IDLE) AppleGreenDark else AppleTheme.colors.accent)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "AGENT EXECUTION PIPELINE",
-                        style = MaterialTheme.typography.labelLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp
+                        text = "AGENT PIPELINE",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.6.sp
                         ),
-                        color = Color.White
+                        color = AppleTheme.colors.textMuted
                     )
                 }
 
-                Text(
-                    text = currentStatus.title,
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                    color = CyanNeon
-                )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50.dp))
+                        .background(AppleTheme.colors.surfaceSecondary)
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                ) {
+                    Text(
+                        text = currentStatus.title,
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 11.sp
+                        ),
+                        color = AppleTheme.colors.accent
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(14.dp))
@@ -116,39 +127,30 @@ fun ExecutionPipelineVisualizer(
             stages.forEachIndexed { index, stage ->
                 val isActive = stage.activeStatuses.contains(currentStatus)
                 val bgColor by animateColorAsState(
-                    targetValue = if (isActive) CyberDark700 else Color.Transparent,
+                    targetValue = if (isActive) AppleTheme.colors.surfaceSecondary else Color.Transparent,
                     label = "bg"
-                )
-                val borderColor by animateColorAsState(
-                    targetValue = if (isActive) CyanNeon else Color.Transparent,
-                    label = "border"
-                )
-                val iconColor by animateColorAsState(
-                    targetValue = if (isActive) CyanNeon else TextMuted,
-                    label = "icon"
                 )
 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(14.dp))
                         .background(bgColor)
-                        .border(1.dp, borderColor, RoundedCornerShape(12.dp))
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                        .padding(horizontal = 10.dp, vertical = 7.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(32.dp)
-                            .clip(CircleShape)
-                            .background(if (isActive) CyanNeon.copy(alpha = 0.2f) else Color(0xFF172033)),
+                            .size(30.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isActive) stage.iconBg else stage.iconBg.copy(alpha = 0.25f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = stage.icon,
                             contentDescription = stage.title,
-                            tint = iconColor,
-                            modifier = Modifier.size(18.dp)
+                            tint = if (isActive) Color.White else AppleTheme.colors.textMuted,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
 
@@ -158,14 +160,15 @@ fun ExecutionPipelineVisualizer(
                         Text(
                             text = stage.title,
                             style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium
+                                fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Medium,
+                                fontSize = 13.sp
                             ),
-                            color = if (isActive) Color.White else TextPrimary
+                            color = if (isActive) AppleTheme.colors.textPrimary else AppleTheme.colors.textSecondary
                         )
                         Text(
                             text = stage.subtitle,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextMuted
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            color = AppleTheme.colors.textMuted
                         )
                     }
 
@@ -173,7 +176,7 @@ fun ExecutionPipelineVisualizer(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(CyanNeon)
+                                .background(AppleTheme.colors.accent)
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Text(
@@ -182,7 +185,7 @@ fun ExecutionPipelineVisualizer(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 9.sp
                                 ),
-                                color = Color.Black
+                                color = Color.White
                             )
                         }
                     }
@@ -191,10 +194,10 @@ fun ExecutionPipelineVisualizer(
                 if (index < stages.lastIndex) {
                     Box(
                         modifier = Modifier
-                            .padding(start = 26.dp)
-                            .width(2.dp)
-                            .height(10.dp)
-                            .background(if (isActive) CyanNeon else Color(0xFF1E293B))
+                            .padding(start = 24.dp)
+                            .width(1.5.dp)
+                            .height(6.dp)
+                            .background(if (isActive) AppleTheme.colors.accent else AppleTheme.colors.border)
                     )
                 }
             }

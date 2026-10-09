@@ -122,23 +122,23 @@ class MayaLiveCornerService : Service() {
             y = 120
         }
 
-        // Custom high-tech floating corner bubble
+        // Apple Dynamic Island-style floating pill container
         val container = FrameLayout(this).apply {
-            setPadding(24, 16, 24, 16)
+            setPadding(32, 18, 32, 18)
             background = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = 60f
-                setColor(0xEE0B1120.toInt())
-                setStroke(3, 0xFF00F0FF.toInt())
+                cornerRadius = 100f
+                setColor(0xF0000000.toInt()) // Apple Dynamic Island near-black translucent
+                setStroke(2, 0x40FFFFFF.toInt()) // Subtle hairline border
             }
         }
 
         val label = TextView(this).apply {
             id = View.generateViewId()
-            text = "● MAYA AI: READY"
-            setTextColor(0xFF00F0FF.toInt())
+            text = "● MAYA AI  READY"
+            setTextColor(0xFF0A84FF.toInt()) // Apple System Blue
             textSize = 12f
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL)
         }
         container.addView(label)
 
@@ -180,21 +180,21 @@ class MayaLiveCornerService : Service() {
         label.text = "● MAYA: ${status.title}"
 
         val accentColor = when (status) {
-            AgentStatus.IDLE -> 0xFF00F0FF.toInt()
-            AgentStatus.LISTENING -> 0xFF10B981.toInt()
-            AgentStatus.THINKING -> 0xFFA855F7.toInt()
-            AgentStatus.ANALYSING -> 0xFF38BDF8.toInt()
-            AgentStatus.LOCATING -> 0xFFF59E0B.toInt()
-            AgentStatus.EXECUTING -> 0xFFEC4899.toInt()
-            AgentStatus.SCROLLING -> 0xFF6366F1.toInt()
-            AgentStatus.NAVIGATING -> 0xFF14B8A6.toInt()
-            AgentStatus.SPEAKING -> 0xFF22C55E.toInt()
-            AgentStatus.WAITING_INPUT -> 0xFFEAB308.toInt()
-            AgentStatus.COMPLETED -> 0xFF10B981.toInt()
-            AgentStatus.ERROR -> 0xFFF43F5E.toInt()
+            AgentStatus.IDLE -> 0xFF0A84FF.toInt() // Apple Blue
+            AgentStatus.LISTENING -> 0xFF30D158.toInt() // Apple Green
+            AgentStatus.THINKING -> 0xFFBF5AF2.toInt() // Apple Purple
+            AgentStatus.ANALYSING -> 0xFF64D2FF.toInt() // Apple Cyan
+            AgentStatus.LOCATING -> 0xFFFF9F0A.toInt() // Apple Orange
+            AgentStatus.EXECUTING -> 0xFFFF375F.toInt() // Apple Pink
+            AgentStatus.SCROLLING -> 0xFF5E5CE6.toInt() // Apple Indigo
+            AgentStatus.NAVIGATING -> 0xFF40C8E0.toInt() // Apple Teal
+            AgentStatus.SPEAKING -> 0xFF30D158.toInt() // Apple Green
+            AgentStatus.WAITING_INPUT -> 0xFFFFD60A.toInt() // Apple Yellow
+            AgentStatus.COMPLETED -> 0xFF30D158.toInt() // Apple Green
+            AgentStatus.ERROR -> 0xFFFF453A.toInt() // Apple Red
         }
 
         label.setTextColor(accentColor)
-        (container.background as? GradientDrawable)?.setStroke(3, accentColor)
+        (container.background as? GradientDrawable)?.setStroke(2, accentColor)
     }
 }

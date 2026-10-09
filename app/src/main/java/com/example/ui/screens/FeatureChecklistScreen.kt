@@ -2,6 +2,13 @@ package com.example.ui.screens
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleGreenDark
+import com.example.ui.theme.AppleOrangeDark
+import com.example.ui.theme.ApplePurpleDark
+import com.example.ui.theme.AppleRedDark
+import com.example.ui.theme.AppleTheme
+import com.example.ui.components.appleBounceClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -188,23 +195,32 @@ fun FeatureChecklistScreen(
                     Column {
                         Text(
                             text = "71 Feature Checklist",
-                            fontSize = 18.sp,
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
-                            color = TextPrimary
+                            color = AppleTheme.colors.textPrimary
                         )
                         Text(
                             text = "$implementedCount of $totalCount Implemented (100%)",
                             fontSize = 12.sp,
-                            color = EmeraldNeon
+                            color = AppleGreenDark
                         )
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleTheme.colors.surface)
+                            .border(0.5.dp, AppleTheme.colors.cardBorder, CircleShape)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = CyanNeon
+                            tint = AppleTheme.colors.textPrimary,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 },
@@ -215,16 +231,16 @@ fun FeatureChecklistScreen(
                         Icon(
                             imageVector = Icons.Default.DoneAll,
                             contentDescription = "All Implemented",
-                            tint = EmeraldNeon
+                            tint = AppleGreenDark
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CyberDark900
+                    containerColor = AppleTheme.colors.background
                 )
             )
         },
-        containerColor = CyberDark900
+        containerColor = AppleTheme.colors.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -236,9 +252,9 @@ fun FeatureChecklistScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(CyberDark800)
-                    .border(1.dp, EmeraldNeon.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(AppleTheme.colors.surface)
+                    .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(24.dp))
                     .padding(16.dp)
             ) {
                 Row(
@@ -247,30 +263,30 @@ fun FeatureChecklistScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(EmeraldNeon.copy(alpha = 0.2f)),
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(AppleGreenDark.copy(alpha = 0.16f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = EmeraldNeon,
-                            modifier = Modifier.size(28.dp)
+                            tint = AppleGreenDark,
+                            modifier = Modifier.size(26.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(14.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "Complete Architecture Ready",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = TextPrimary
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = AppleTheme.colors.textPrimary
                         )
                         Text(
                             text = "All 71 functions across Core AI, Voice, UI, Device Control, System, Agent, Telegram & Security are fully implemented.",
                             fontSize = 12.sp,
-                            color = TextMuted,
+                            color = AppleTheme.colors.textMuted,
                             lineHeight = 16.sp
                         )
                     }
@@ -284,23 +300,25 @@ fun FeatureChecklistScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp),
-                placeholder = { Text("Search 71 features...", color = TextMuted, fontSize = 14.sp) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = CyanNeon) },
+                placeholder = { Text("Search 71 features...", color = AppleTheme.colors.textMuted, fontSize = 14.sp) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = AppleTheme.colors.textMuted) },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { searchQuery = "" }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear", tint = TextMuted)
+                            Icon(Icons.Default.Clear, contentDescription = "Clear", tint = AppleTheme.colors.textMuted)
                         }
                     }
                 },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = CyanNeon,
-                    unfocusedBorderColor = CyberDark700,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedContainerColor = AppleTheme.colors.surface,
+                    unfocusedContainerColor = AppleTheme.colors.surface,
+                    focusedTextColor = AppleTheme.colors.textPrimary,
+                    unfocusedTextColor = AppleTheme.colors.textPrimary
                 ),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(18.dp)
             )
 
             // Category Filter Chips
@@ -320,19 +338,20 @@ fun FeatureChecklistScreen(
                             Text(
                                 text = category,
                                 fontSize = 12.sp,
-                                color = if (isSelected) CyberDark900 else TextPrimary
+                                color = if (isSelected) Color.White else AppleTheme.colors.textPrimary
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = CyanNeon,
-                            containerColor = CyberDark800
+                            selectedContainerColor = AppleTheme.colors.accent,
+                            containerColor = AppleTheme.colors.surface
                         ),
                         border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
                             selected = isSelected,
-                            borderColor = CyberDark700,
-                            selectedBorderColor = CyanNeon
-                        )
+                            borderColor = AppleTheme.colors.border,
+                            selectedBorderColor = Color.Transparent
+                        ),
+                        shape = RoundedCornerShape(14.dp)
                     )
                 }
             }
@@ -342,10 +361,13 @@ fun FeatureChecklistScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
-                items(filteredItems) { item ->
+                items(
+                    items = filteredItems,
+                    key = { it.id }
+                ) { item ->
                     FeatureCard(item = item)
                 }
             }
@@ -355,16 +377,15 @@ fun FeatureChecklistScreen(
 
 @Composable
 fun FeatureCard(item: FeatureItem) {
-    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(CyberDark800)
-            .border(1.dp, CyberDark700, RoundedCornerShape(12.dp))
-            .clickable { expanded = !expanded }
+            .clip(RoundedCornerShape(20.dp))
+            .background(AppleTheme.colors.surface)
+            .border(0.5.dp, AppleTheme.colors.cardBorder, RoundedCornerShape(20.dp))
+            .appleBounceClick(pressedScale = 0.98f) { expanded = !expanded }
             .padding(14.dp)
     ) {
         Column {
@@ -376,33 +397,31 @@ fun FeatureCard(item: FeatureItem) {
                 Box(
                     modifier = Modifier
                         .size(28.dp)
-                        .clip(CircleShape)
-                        .background(CyanNeon.copy(alpha = 0.15f)),
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(AppleTheme.colors.accent.copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "${item.id}",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = CyanNeon
+                        color = AppleTheme.colors.accent
                     )
                 }
 
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = item.title,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = TextPrimary
-                        )
-                    }
+                    Text(
+                        text = item.title,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = AppleTheme.colors.textPrimary
+                    )
                     Text(
                         text = item.category,
                         fontSize = 11.sp,
-                        color = VioletNeon
+                        color = ApplePurpleDark
                     )
                 }
 
@@ -410,14 +429,14 @@ fun FeatureCard(item: FeatureItem) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(EmeraldNeon.copy(alpha = 0.15f))
+                        .clip(RoundedCornerShape(50.dp))
+                        .background(AppleGreenDark.copy(alpha = 0.15f))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = null,
-                        tint = EmeraldNeon,
+                        tint = AppleGreenDark,
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -425,7 +444,7 @@ fun FeatureCard(item: FeatureItem) {
                         text = "Implemented",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
-                        color = EmeraldNeon
+                        color = AppleGreenDark
                     )
                 }
             }
@@ -439,14 +458,14 @@ fun FeatureCard(item: FeatureItem) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(CyberDark900)
-                            .padding(10.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(AppleTheme.colors.surfaceSecondary)
+                            .padding(12.dp)
                     ) {
                         Text(
                             text = item.implementationDetails,
                             fontSize = 12.sp,
-                            color = TextMuted,
+                            color = AppleTheme.colors.textMuted,
                             lineHeight = 16.sp
                         )
                     }

@@ -6,11 +6,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,9 +41,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -63,6 +72,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -83,6 +93,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.components.appleBounceClick
 import com.example.ui.screens.AppearanceScreen
 import com.example.ui.screens.ChatScreen
 import com.example.ui.screens.ConnectorsScreen
@@ -98,15 +109,16 @@ import com.example.ui.screens.SkillsScreen
 import com.example.ui.screens.SubAgentsScreen
 import com.example.ui.screens.VoiceModeScreen
 import com.example.ui.screens.WhatsAppScreen
-import com.example.ui.theme.CyanNeon
-import com.example.ui.theme.CyberDark700
-import com.example.ui.theme.CyberDark800
-import com.example.ui.theme.CyberDark900
-import com.example.ui.theme.EmeraldNeon
+import com.example.ui.theme.AppleBlueDark
+import com.example.ui.theme.AppleGreenDark
+import com.example.ui.theme.AppleIndigoDark
+import com.example.ui.theme.AppleOrangeDark
+import com.example.ui.theme.ApplePinkDark
+import com.example.ui.theme.ApplePurpleDark
+import com.example.ui.theme.AppleRedDark
+import com.example.ui.theme.AppleTealDark
+import com.example.ui.theme.AppleTheme
 import com.example.ui.theme.MyApplicationTheme
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.VioletNeon
 import kotlinx.coroutines.launch
 
 enum class Screen {
@@ -143,7 +155,15 @@ class MainActivity : ComponentActivity() {
         val app = application as MayaApplication
 
         setContent {
-            MyApplicationTheme {
+            val themeMode by app.preferences.themeMode.collectAsState()
+            val isSystemDark = isSystemInDarkTheme()
+            val isDark = when (themeMode) {
+                "light" -> false
+                "dark" -> true
+                else -> isSystemDark
+            }
+
+            MyApplicationTheme(darkTheme = isDark) {
                 val isSetupCompleted by app.preferences.isSetupCompleted.collectAsState()
 
                 if (!isSetupCompleted) {
@@ -178,11 +198,12 @@ fun MainAppContent(app: MayaApplication) {
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier
-                    .width(300.dp)
+                    .width(310.dp)
                     .fillMaxHeight(),
-                drawerContainerColor = CyberDark900
+                drawerContainerColor = AppleTheme.colors.surface,
+                drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp)
             ) {
-                DrawerContent(
+                AppleDrawerContent(
                     currentScreen = currentScreen,
                     onNavigate = { screen ->
                         currentScreen = screen
@@ -194,23 +215,29 @@ fun MainAppContent(app: MayaApplication) {
     ) {
         Scaffold(
             bottomBar = {
-                // Bottom Navigation (Section 49: Home, Scan, Memories, Chat, Voice)
+                // Bottom Navigation (Apple Tab Bar)
                 if (currentScreen in listOf(Screen.HOME, Screen.SCAN, Screen.MEMORIES, Screen.CHAT, Screen.VOICE)) {
-                    MayaBottomNavigation(
+                    AppleBottomTabBar(
                         currentScreen = currentScreen,
                         onNavigate = { currentScreen = it }
                     )
                 }
             },
-            containerColor = CyberDark900,
+            containerColor = AppleTheme.colors.background,
             contentWindowInsets = WindowInsets(0, 0, 0, 0)
         ) { innerPadding ->
-            Box(
+            AnimatedContent(
+                targetState = currentScreen,
+                transitionSpec = {
+                    (fadeIn(animationSpec = tween(220)) + scaleIn(initialScale = 0.985f, animationSpec = tween(220)))
+                        .togetherWith(fadeOut(animationSpec = tween(180)) + scaleOut(targetScale = 1.01f, animationSpec = tween(180)))
+                },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                when (currentScreen) {
+                    .padding(innerPadding),
+                label = "apple_screen_transition"
+            ) { targetScreen ->
+                when (targetScreen) {
                     Screen.HOME -> HomeScreen(
                         preferences = app.preferences,
                         taskEngine = app.taskExecutionEngine,
@@ -373,7 +400,7 @@ fun MainAppContent(app: MayaApplication) {
                         details = listOf(
                             "Maya AI v1.0.0 (Production Release)",
                             "Screen Intelligence Engine with X/Y Coordinate Tap",
-                            "Powered by Google Gemini 3.5 Flash"
+                            "Powered by Google Gemini 2.5 Flash"
                         ),
                         onBack = { currentScreen = Screen.HOME }
                     )
@@ -402,8 +429,12 @@ fun MainAppContent(app: MayaApplication) {
     }
 }
 
+/**
+ * 🍎 Apple-Inspired Navigation Drawer (Sidebar).
+ * Follows the 7 structured categories from Prompt Section 7.
+ */
 @Composable
-fun DrawerContent(
+fun AppleDrawerContent(
     currentScreen: Screen,
     onNavigate: (Screen) -> Unit
 ) {
@@ -411,20 +442,21 @@ fun DrawerContent(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(vertical = 24.dp)
+            .padding(vertical = 20.dp)
     ) {
-        // Drawer Header with Maya Logo
+        // Apple Identity Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 20.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(46.dp)
                     .clip(CircleShape)
-                    .border(1.5.dp, CyanNeon, CircleShape),
+                    .background(AppleTheme.colors.surfaceSecondary)
+                    .border(1.dp, AppleTheme.colors.cardBorder, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -436,194 +468,236 @@ fun DrawerContent(
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    text = "MAYA AI",
+                    text = "Maya AI",
                     style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.5.sp
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = (-0.3).sp
                     ),
-                    color = Color.White
+                    color = AppleTheme.colors.textPrimary
                 )
                 Text(
                     text = "Autonomous Android Agent",
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                    color = CyanNeon
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                    color = AppleTheme.colors.textMuted
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-        HorizontalDivider(color = Color(0xFF1E293B))
+        Spacer(modifier = Modifier.height(14.dp))
+        HorizontalDivider(thickness = 0.5.dp, color = AppleTheme.colors.border)
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Section: Main Navigation
-        DrawerItem(label = "Home Dashboard", icon = Icons.Default.Home, isSelected = currentScreen == Screen.HOME) { onNavigate(Screen.HOME) }
-        DrawerItem(label = "71 Features Checklist (100%)", icon = Icons.Default.CheckCircle, isSelected = currentScreen == Screen.CHECKLIST) { onNavigate(Screen.CHECKLIST) }
-        DrawerItem(label = "Live Voice Task", icon = Icons.Default.Mic, isSelected = currentScreen == Screen.LIVE_VOICE_TASK) { onNavigate(Screen.LIVE_VOICE_TASK) }
-        DrawerItem(label = "Scan / Vision", icon = Icons.Default.Search, isSelected = currentScreen == Screen.SCAN) { onNavigate(Screen.SCAN) }
-        DrawerItem(label = "Memories & Tasks", icon = Icons.Default.Psychology, isSelected = currentScreen == Screen.MEMORIES) { onNavigate(Screen.MEMORIES) }
-        DrawerItem(label = "Chat", icon = Icons.AutoMirrored.Filled.Chat, isSelected = currentScreen == Screen.CHAT) { onNavigate(Screen.CHAT) }
+        // 1. HOME GROUP
+        AppleDrawerGroupHeader("HOME")
+        AppleDrawerRow("Home Dashboard", Icons.Default.Home, AppleBlueDark, currentScreen == Screen.HOME) { onNavigate(Screen.HOME) }
+        AppleDrawerRow("71 Features (100%)", Icons.Default.CheckCircle, AppleGreenDark, currentScreen == Screen.CHECKLIST) { onNavigate(Screen.CHECKLIST) }
+        AppleDrawerRow("Live Voice Task", Icons.Default.Mic, AppleTealDark, currentScreen == Screen.LIVE_VOICE_TASK) { onNavigate(Screen.LIVE_VOICE_TASK) }
 
         Spacer(modifier = Modifier.height(10.dp))
-        DrawerSectionHeader("PRODUCTIVITY & WORKSPACES")
-        DrawerItem(label = "Markets & Crypto", icon = Icons.Default.QueryStats, isSelected = currentScreen == Screen.MARKETS) { onNavigate(Screen.MARKETS) }
-        DrawerItem(label = "Marketing Studio", icon = Icons.Default.Share, isSelected = currentScreen == Screen.MARKETING) { onNavigate(Screen.MARKETING) }
-        DrawerItem(label = "Documents & PDFs", icon = Icons.Default.Description, isSelected = currentScreen == Screen.DOCUMENTS) { onNavigate(Screen.DOCUMENTS) }
-        DrawerItem(label = "Website / Coding", icon = Icons.Default.Code, isSelected = currentScreen == Screen.CODING) { onNavigate(Screen.CODING) }
-        DrawerItem(label = "Study / Whiteboard", icon = Icons.Default.School, isSelected = currentScreen == Screen.STUDY) { onNavigate(Screen.STUDY) }
+
+        // 2. PRODUCTIVITY
+        AppleDrawerGroupHeader("PRODUCTIVITY")
+        AppleDrawerRow("Markets & Crypto", Icons.Default.QueryStats, AppleGreenDark, currentScreen == Screen.MARKETS) { onNavigate(Screen.MARKETS) }
+        AppleDrawerRow("Marketing Studio", Icons.Default.Share, ApplePinkDark, currentScreen == Screen.MARKETING) { onNavigate(Screen.MARKETING) }
+        AppleDrawerRow("Documents & OCR", Icons.Default.Description, AppleOrangeDark, currentScreen == Screen.DOCUMENTS) { onNavigate(Screen.DOCUMENTS) }
+        AppleDrawerRow("Coding Workspace", Icons.Default.Code, AppleIndigoDark, currentScreen == Screen.CODING) { onNavigate(Screen.CODING) }
+        AppleDrawerRow("Study & Whiteboard", Icons.Default.School, ApplePurpleDark, currentScreen == Screen.STUDY) { onNavigate(Screen.STUDY) }
 
         Spacer(modifier = Modifier.height(10.dp))
-        DrawerSectionHeader("AUTOMATION & CONNECTORS")
-        DrawerItem(label = "Messages & WhatsApp", icon = Icons.AutoMirrored.Filled.Chat, isSelected = currentScreen == Screen.WHATSAPP) { onNavigate(Screen.WHATSAPP) }
-        DrawerItem(label = "Skills Store", icon = Icons.Default.Extension, isSelected = currentScreen == Screen.SKILLS) { onNavigate(Screen.SKILLS) }
-        DrawerItem(label = "Sub-Agents", icon = Icons.Default.SmartToy, isSelected = currentScreen == Screen.SUB_AGENTS) { onNavigate(Screen.SUB_AGENTS) }
-        DrawerItem(label = "Connectors & Telegram", icon = Icons.Default.Link, isSelected = currentScreen == Screen.CONNECTORS) { onNavigate(Screen.CONNECTORS) }
+
+        // 3. AI TOOLS
+        AppleDrawerGroupHeader("AI TOOLS")
+        AppleDrawerRow("Scan / Vision", Icons.Default.Search, AppleBlueDark, currentScreen == Screen.SCAN) { onNavigate(Screen.SCAN) }
+        AppleDrawerRow("Memories & Tasks", Icons.Default.Psychology, AppleIndigoDark, currentScreen == Screen.MEMORIES) { onNavigate(Screen.MEMORIES) }
+        AppleDrawerRow("Chat Assistant", Icons.AutoMirrored.Filled.Chat, AppleTealDark, currentScreen == Screen.CHAT) { onNavigate(Screen.CHAT) }
 
         Spacer(modifier = Modifier.height(10.dp))
-        DrawerSectionHeader("SYSTEM & SETTINGS")
-        DrawerItem(label = "Appearance & 3D Avatar", icon = Icons.Default.Palette, isSelected = currentScreen == Screen.APPEARANCE) { onNavigate(Screen.APPEARANCE) }
-        DrawerItem(label = "Settings Hub", icon = Icons.Default.Settings, isSelected = currentScreen == Screen.SETTINGS) { onNavigate(Screen.SETTINGS) }
-        DrawerItem(label = "Notifications", icon = Icons.Default.Notifications, isSelected = currentScreen == Screen.NOTIFICATIONS) { onNavigate(Screen.NOTIFICATIONS) }
-        DrawerItem(label = "Privacy Policy", icon = Icons.Default.Lock, isSelected = currentScreen == Screen.PRIVACY) { onNavigate(Screen.PRIVACY) }
-        DrawerItem(label = "About Maya AI", icon = Icons.Default.Info, isSelected = currentScreen == Screen.ABOUT) { onNavigate(Screen.ABOUT) }
-        DrawerItem(label = "Upgrade to PRO", icon = Icons.Default.Star, isSelected = currentScreen == Screen.UPGRADE) { onNavigate(Screen.UPGRADE) }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        // 4. COMMUNICATION
+        AppleDrawerGroupHeader("COMMUNICATION")
+        AppleDrawerRow("Messages & WhatsApp", Icons.AutoMirrored.Filled.Chat, AppleGreenDark, currentScreen == Screen.WHATSAPP) { onNavigate(Screen.WHATSAPP) }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // 5. INTEGRATIONS
+        AppleDrawerGroupHeader("INTEGRATIONS")
+        AppleDrawerRow("Skills Store", Icons.Default.Extension, AppleOrangeDark, currentScreen == Screen.SKILLS) { onNavigate(Screen.SKILLS) }
+        AppleDrawerRow("Sub-Agents", Icons.Default.SmartToy, ApplePurpleDark, currentScreen == Screen.SUB_AGENTS) { onNavigate(Screen.SUB_AGENTS) }
+        AppleDrawerRow("Connectors & Telegram", Icons.Default.Link, AppleBlueDark, currentScreen == Screen.CONNECTORS) { onNavigate(Screen.CONNECTORS) }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // 6. SETTINGS
+        AppleDrawerGroupHeader("SETTINGS")
+        AppleDrawerRow("Appearance", Icons.Default.Palette, ApplePurpleDark, currentScreen == Screen.APPEARANCE) { onNavigate(Screen.APPEARANCE) }
+        AppleDrawerRow("Settings Hub", Icons.Default.Settings, AppleBlueDark, currentScreen == Screen.SETTINGS) { onNavigate(Screen.SETTINGS) }
+        AppleDrawerRow("Notifications", Icons.Default.Notifications, AppleRedDark, currentScreen == Screen.NOTIFICATIONS) { onNavigate(Screen.NOTIFICATIONS) }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // 7. ABOUT
+        AppleDrawerGroupHeader("ABOUT")
+        AppleDrawerRow("Privacy Policy", Icons.Default.Lock, AppleGreenDark, currentScreen == Screen.PRIVACY) { onNavigate(Screen.PRIVACY) }
+        AppleDrawerRow("About Maya AI", Icons.Default.Info, AppleBlueDark, currentScreen == Screen.ABOUT) { onNavigate(Screen.ABOUT) }
+        AppleDrawerRow("Upgrade to PRO", Icons.Default.Star, AppleOrangeDark, currentScreen == Screen.UPGRADE) { onNavigate(Screen.UPGRADE) }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
 @Composable
-fun DrawerSectionHeader(title: String) {
+private fun AppleDrawerGroupHeader(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.labelSmall.copy(
-            fontWeight = FontWeight.Bold,
-            color = TextMuted,
-            letterSpacing = 1.sp,
-            fontSize = 10.sp
+            fontWeight = FontWeight.SemiBold,
+            color = AppleTheme.colors.textMuted,
+            letterSpacing = 0.6.sp,
+            fontSize = 11.sp
         ),
         modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
     )
 }
 
 @Composable
-fun DrawerItem(
+private fun AppleDrawerRow(
     label: String,
     icon: ImageVector,
+    iconBg: Color,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    NavigationDrawerItem(
-        label = {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
-                ),
-                color = if (isSelected) CyanNeon else TextPrimary
-            )
-        },
-        icon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = if (isSelected) CyanNeon else TextMuted
-            )
-        },
-        selected = isSelected,
-        onClick = onClick,
-        colors = NavigationDrawerItemDefaults.colors(
-            selectedContainerColor = CyberDark800,
-            unselectedContainerColor = Color.Transparent
-        ),
-        shape = RoundedCornerShape(12.dp),
+    val bgColor = if (isSelected) AppleTheme.colors.surfaceSecondary else Color.Transparent
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 2.dp)
-    )
+            .clip(RoundedCornerShape(12.dp))
+            .background(bgColor)
+            .appleBounceClick(pressedScale = 0.98f, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 9.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(28.dp)
+                .clip(RoundedCornerShape(7.dp))
+                .background(iconBg),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = Color.White,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
+                fontSize = 14.sp
+            ),
+            color = if (isSelected) AppleTheme.colors.accent else AppleTheme.colors.textPrimary,
+            modifier = Modifier.weight(1f)
+        )
+    }
 }
 
+/**
+ * 🍎 Apple-Inspired Bottom Tab Bar.
+ * Clean, subtle, elevated with iOS active indicator.
+ */
 @Composable
-fun MayaBottomNavigation(
+fun AppleBottomTabBar(
     currentScreen: Screen,
     onNavigate: (Screen) -> Unit
 ) {
-    NavigationBar(
-        containerColor = CyberDark900,
-        tonalElevation = 8.dp
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(0.5.dp, AppleTheme.colors.border),
+        color = AppleTheme.colors.surface
     ) {
-        NavigationBarItem(
-            selected = currentScreen == Screen.HOME,
-            onClick = { onNavigate(Screen.HOME) },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home", fontSize = 11.sp) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.Black,
-                selectedTextColor = CyanNeon,
-                indicatorColor = CyanNeon,
-                unselectedIconColor = TextMuted,
-                unselectedTextColor = TextMuted
-            ),
-            modifier = Modifier.testTag("nav_home")
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(vertical = 6.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AppleTabItem(
+                label = "Home",
+                icon = Icons.Default.Home,
+                selected = currentScreen == Screen.HOME,
+                onClick = { onNavigate(Screen.HOME) },
+                testTag = "nav_home"
+            )
+            AppleTabItem(
+                label = "Scan",
+                icon = Icons.Default.Search,
+                selected = currentScreen == Screen.SCAN,
+                onClick = { onNavigate(Screen.SCAN) },
+                testTag = "nav_scan"
+            )
+            AppleTabItem(
+                label = "Memories",
+                icon = Icons.Default.Psychology,
+                selected = currentScreen == Screen.MEMORIES,
+                onClick = { onNavigate(Screen.MEMORIES) },
+                testTag = "nav_memories"
+            )
+            AppleTabItem(
+                label = "Chat",
+                icon = Icons.AutoMirrored.Filled.Chat,
+                selected = currentScreen == Screen.CHAT,
+                onClick = { onNavigate(Screen.CHAT) },
+                testTag = "nav_chat"
+            )
+            AppleTabItem(
+                label = "Voice",
+                icon = Icons.Default.Mic,
+                selected = currentScreen == Screen.VOICE,
+                onClick = { onNavigate(Screen.VOICE) },
+                testTag = "nav_voice"
+            )
+        }
+    }
+}
 
-        NavigationBarItem(
-            selected = currentScreen == Screen.SCAN,
-            onClick = { onNavigate(Screen.SCAN) },
-            icon = { Icon(Icons.Default.Search, contentDescription = "Scan") },
-            label = { Text("Scan", fontSize = 11.sp) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.Black,
-                selectedTextColor = CyanNeon,
-                indicatorColor = CyanNeon,
-                unselectedIconColor = TextMuted,
-                unselectedTextColor = TextMuted
-            ),
-            modifier = Modifier.testTag("nav_scan")
-        )
+@Composable
+private fun AppleTabItem(
+    label: String,
+    icon: ImageVector,
+    selected: Boolean,
+    onClick: () -> Unit,
+    testTag: String
+) {
+    val tint = if (selected) AppleTheme.colors.accent else AppleTheme.colors.textMuted
 
-        NavigationBarItem(
-            selected = currentScreen == Screen.MEMORIES,
-            onClick = { onNavigate(Screen.MEMORIES) },
-            icon = { Icon(Icons.Default.Psychology, contentDescription = "Memories") },
-            label = { Text("Memories", fontSize = 11.sp) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.Black,
-                selectedTextColor = CyanNeon,
-                indicatorColor = CyanNeon,
-                unselectedIconColor = TextMuted,
-                unselectedTextColor = TextMuted
-            ),
-            modifier = Modifier.testTag("nav_memories")
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .appleBounceClick(pressedScale = 0.92f, onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 4.dp)
+            .testTag(testTag),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = tint,
+            modifier = Modifier.size(24.dp)
         )
-
-        NavigationBarItem(
-            selected = currentScreen == Screen.CHAT,
-            onClick = { onNavigate(Screen.CHAT) },
-            icon = { Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "Chat") },
-            label = { Text("Chat", fontSize = 11.sp) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.Black,
-                selectedTextColor = CyanNeon,
-                indicatorColor = CyanNeon,
-                unselectedIconColor = TextMuted,
-                unselectedTextColor = TextMuted
-            ),
-            modifier = Modifier.testTag("nav_chat")
-        )
-
-        NavigationBarItem(
-            selected = currentScreen == Screen.VOICE,
-            onClick = { onNavigate(Screen.VOICE) },
-            icon = { Icon(Icons.Default.Mic, contentDescription = "Voice") },
-            label = { Text("Voice", fontSize = 11.sp) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.Black,
-                selectedTextColor = CyanNeon,
-                indicatorColor = CyanNeon,
-                unselectedIconColor = TextMuted,
-                unselectedTextColor = TextMuted
-            ),
-            modifier = Modifier.testTag("nav_voice")
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = label,
+            fontSize = 11.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            color = tint
         )
     }
 }
