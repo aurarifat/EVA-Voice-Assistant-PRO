@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Maya AI</string>
+    <string name="accessibility_service_description">Maya AI uses this accessibility service to understand screen elements, locate clickable buttons, perform touch actions and navigate apps during voice tasks.</string>
+</resources>

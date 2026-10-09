@@ -1,0 +1,6 @@
+{
+  "name": "Maya AI",
+  "description": "Advanced Android AI Agent with Live Voice, Screen Understanding, Accessibility Control, and Task Automation",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
