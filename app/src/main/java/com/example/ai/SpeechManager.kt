@@ -59,8 +59,8 @@ class SpeechManager(private val context: Context) : TextToSpeech.OnInitListener 
         val hasHindi = text.any { it in '\u0900'..'\u097F' }
 
         return when {
-            hasBangla -> Locale("bn", "BD")
-            hasHindi -> Locale("hi", "IN")
+            hasBangla -> Locale.forLanguageTag("bn-BD")
+            hasHindi -> Locale.forLanguageTag("hi-IN")
             else -> Locale.US
         }
     }

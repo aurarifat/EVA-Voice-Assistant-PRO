@@ -58,6 +58,9 @@ jobs:
           KEYSTORE_PATH="./debug.keystore"
           if [ -f "$KEYSTORE_PATH" ]; then
             echo "debug.keystore already exists. Skipping generation."
+          elif [ -f "./debug.keystore.base64" ]; then
+            echo "Decoding debug.keystore from debug.keystore.base64..."
+            base64 -d ./debug.keystore.base64 > "$KEYSTORE_PATH"
           else
             echo "debug.keystore not found. Generating temporary debug keystore using Java 17 keytool..."
             "$JAVA_HOME/bin/keytool" -genkey -v \
@@ -76,6 +79,16 @@ jobs:
             exit 1
           fi
           echo "Confirmed: ./debug.keystore exists and is ready for debug signing."
+
+          # Ensure .env exists so secrets Gradle plugin has a valid file during build
+          if [ ! -f "./.env" ]; then
+            echo "Creating fallback .env from .env.example..."
+            if [ -f "./.env.example" ]; then
+              cp ./.env.example ./.env
+            else
+              touch ./.env
+            fi
+          fi
 
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace --no-daemon

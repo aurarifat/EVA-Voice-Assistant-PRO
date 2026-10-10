@@ -20,6 +20,8 @@ class MayaVoiceInteractionSessionService : VoiceInteractionSessionService() {
 }
 
 class MayaVoiceSession(context: Context) : VoiceInteractionSession(context) {
+    @Deprecated("Deprecated in Java", ReplaceWith("super.onHandleAssist(data, structure, content)"))
+    @Suppress("DEPRECATION")
     override fun onHandleAssist(data: Bundle?, structure: android.app.assist.AssistStructure?, content: android.app.assist.AssistContent?) {
         super.onHandleAssist(data, structure, content)
     }

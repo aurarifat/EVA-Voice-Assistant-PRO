@@ -27,6 +27,9 @@ class MayaAccessibilityService : AccessibilityService() {
 
         private val _detectedScreenElements = MutableStateFlow<List<ScreenElement>>(emptyList())
         val detectedScreenElements: StateFlow<List<ScreenElement>> = _detectedScreenElements.asStateFlow()
+
+        private val _currentParsedContent = MutableStateFlow<ParsedScreenContent?>(null)
+        val currentParsedContent: StateFlow<ParsedScreenContent?> = _currentParsedContent.asStateFlow()
     }
 
     override fun onServiceConnected() {
@@ -55,12 +58,16 @@ class MayaAccessibilityService : AccessibilityService() {
         // Accessibility interrupted
     }
 
+    fun captureCurrentScreen(): ParsedScreenContent {
+        val root = rootInActiveWindow
+        val parsed = ScreenContentParser.parseScreen(root, _currentPackageName.value)
+        _detectedScreenElements.value = parsed.elements
+        _currentParsedContent.value = parsed
+        return parsed
+    }
+
     fun inspectCurrentScreen(): List<ScreenElement> {
-        val root = rootInActiveWindow ?: return emptyList()
-        val elements = mutableListOf<ScreenElement>()
-        traverseNode(root, elements)
-        _detectedScreenElements.value = elements
-        return elements
+        return captureCurrentScreen().elements
     }
 
     private fun traverseNode(node: AccessibilityNodeInfo, list: MutableList<ScreenElement>) {

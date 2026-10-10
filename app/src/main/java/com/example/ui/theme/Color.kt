@@ -88,7 +88,9 @@ data class ApplePalette(
     val accentSecondary: Color,
     val success: Color,
     val warning: Color,
-    val error: Color
+    val error: Color,
+    val textTertiary: Color = textMuted,
+    val divider: Color = border
 )
 
 val AppleLightPalette = ApplePalette(

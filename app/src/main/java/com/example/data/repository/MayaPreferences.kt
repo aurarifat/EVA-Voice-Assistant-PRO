@@ -20,6 +20,11 @@ class MayaPreferences(context: Context) {
     )
     val geminiApiKey: StateFlow<String> = _geminiApiKey.asStateFlow()
 
+    private val _geminiModel = MutableStateFlow(
+        prefs.getString("gemini_model", "gemini-2.5-flash") ?: "gemini-2.5-flash"
+    )
+    val geminiModel: StateFlow<String> = _geminiModel.asStateFlow()
+
     private val _themeMode = MutableStateFlow(prefs.getString("theme_mode", "dark") ?: "dark")
     val themeMode: StateFlow<String> = _themeMode.asStateFlow()
 
@@ -127,6 +132,11 @@ class MayaPreferences(context: Context) {
     fun setGeminiApiKey(key: String) {
         prefs.edit().putString("gemini_api_key", key).apply()
         _geminiApiKey.value = key
+    }
+
+    fun setGeminiModel(model: String) {
+        prefs.edit().putString("gemini_model", model).apply()
+        _geminiModel.value = model
     }
 
     fun setVoiceMode(enabled: Boolean) {

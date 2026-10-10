@@ -26,10 +26,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.AccessibilityNew
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BatteryChargingFull
-import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Email
@@ -124,10 +124,12 @@ fun SettingsScreen(
     val isAutoStartBoot by preferences.isAutoStartBootEnabled.collectAsState()
     val wakeWord by preferences.wakeWord.collectAsState()
     val apiKey by preferences.geminiApiKey.collectAsState()
+    val currentModel by preferences.geminiModel.collectAsState()
 
     var customWakeWord by remember { mutableStateOf(wakeWord) }
     var apiKeyInput by remember { mutableStateOf(apiKey) }
     var showApiKeyInput by remember { mutableStateOf(false) }
+    var showModelSelector by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -278,6 +280,75 @@ fun SettingsScreen(
                                 unfocusedTextColor = AppleTheme.colors.textPrimary
                             )
                         )
+                    }
+                }
+
+                AppleGroupDivider()
+
+                AppleSettingsRow(
+                    icon = Icons.Default.AutoAwesome,
+                    iconBg = ApplePurpleDark,
+                    title = "Gemini Model",
+                    subtitle = currentModel,
+                    onClick = { showModelSelector = !showModelSelector },
+                    trailing = {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = AppleTheme.colors.textMuted,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                )
+
+                if (showModelSelector) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp)
+                    ) {
+                        listOf(
+                            "gemini-2.5-flash" to "Fast & Intelligent (Recommended)",
+                            "gemini-2.5-pro" to "Complex Reasoning & Multimodal",
+                            "gemini-1.5-flash" to "Legacy Lightweight Model",
+                            "gemini-1.5-pro" to "Legacy Deep Context Model"
+                        ).forEach { (modelId, desc) ->
+                            val isSelected = currentModel == modelId
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(if (isSelected) AppleTheme.colors.surfaceSecondary else Color.Transparent)
+                                    .clickable {
+                                        preferences.setGeminiModel(modelId)
+                                    }
+                                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column {
+                                    Text(
+                                        text = modelId,
+                                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                        color = if (isSelected) AppleTheme.colors.accent else AppleTheme.colors.textPrimary,
+                                        fontSize = 14.sp
+                                    )
+                                    Text(
+                                        text = desc,
+                                        fontSize = 11.sp,
+                                        color = AppleTheme.colors.textMuted
+                                    )
+                                }
+                                if (isSelected) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = "Selected",
+                                        tint = AppleTheme.colors.accent,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -474,7 +545,7 @@ fun SettingsScreen(
             // ==========================================
             AppleSettingsGroup(title = "COMMUNICATION & SOCIAL") {
                 AppleSettingsRow(
-                    icon = Icons.Default.Chat,
+                    icon = Icons.AutoMirrored.Filled.Chat,
                     iconBg = AppleGreenDark,
                     title = "WhatsApp Assistant",
                     subtitle = "Auto-reply & group summarizer",
